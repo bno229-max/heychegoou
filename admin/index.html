@@ -102,6 +102,7 @@
 </head>
 <body>
 
+    <!-- AUTH -->
     <div id="auth-view" class="active-system-view">
         <div class="auth-card">
             <div class="auth-logo"><i class="ph ph-buildings"></i> Hey Chegoou</div>
@@ -117,6 +118,7 @@
         </div>
     </div>
 
+    <!-- MAIN APP -->
     <div id="pc-view">
         <aside class="sidebar" id="main-sidebar">
             <div class="sidebar-header"><div class="logo"><i class="ph ph-buildings"></i> Hey Chegoou</div></div>
@@ -141,6 +143,7 @@
         </aside>
 
         <main class="main-content">
+            <!-- ABA RECEPÇÃO -->
             <section id="pc-dashboard" class="view-section active">
                 <div class="page-header">
                     <div class="page-title-wrap">
@@ -189,6 +192,7 @@
                 </div>
             </section>
 
+            <!-- ABA DASHBOARDS -->
             <section id="pc-indicadores" class="view-section">
                 <div class="page-header">
                     <div class="page-title-wrap">
@@ -218,6 +222,7 @@
                 </div>
             </section>
 
+            <!-- ABA MORADORES -->
             <section id="pc-moradores" class="view-section">
                 <div class="page-header">
                     <div class="page-title-wrap">
@@ -241,6 +246,7 @@
                 </div>
             </section>
 
+            <!-- ABA PORTEIROS -->
             <section id="pc-porteiros" class="view-section">
                 <div class="page-header">
                     <div class="page-title-wrap">
@@ -257,6 +263,7 @@
                 </div>
             </section>
 
+            <!-- ABA COMUNICAÇÃO -->
             <section id="pc-comunicacao" class="view-section">
                 <div class="page-header"><div class="page-title-wrap"><button class="sidebar-toggle-btn" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list"></i></button><h1 class="page-title">Comunicação</h1></div></div>
                 <div class="panel">
@@ -273,6 +280,7 @@
                 </div>
             </section>
 
+            <!-- ABA CONFIGURAÇÕES -->
             <section id="pc-config" class="view-section">
                 <div class="page-header"><div class="page-title-wrap"><button class="sidebar-toggle-btn" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list"></i></button><h1 class="page-title">Configurações Gerais</h1></div></div>
                 <div class="panel">
@@ -286,6 +294,9 @@
         </main>
     </div>
 
+    <!-- MODAIS -->
+
+    <!-- NOVA ENCOMENDA (RECEPÇÃO ADMIN) -->
     <div class="modal-overlay" id="receiveModal">
         <div class="modal-card">
             <div class="modal-header"><h2>Nova Encomenda</h2><button class="btn-action" style="border:none;" onclick="closeModal('receiveModal')"><i class="ph ph-x"></i></button></div>
@@ -296,6 +307,7 @@
             </div>
             <div class="form-group"><label>Remetente *</label>
                 <input type="text" id="modal-remetente" class="form-control" required>
+                <!-- TAGS ATUALIZADAS -->
                 <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; font-size:0.7rem;">
                     <span class="badge" onclick="document.getElementById('modal-remetente').value='Mercado Livre'">Mercado Livre</span>
                     <span class="badge" onclick="document.getElementById('modal-remetente').value='Amazon'">Amazon</span>
@@ -316,6 +328,7 @@
         </div>
     </div>
 
+    <!-- ADICIONAR MORADOR -->
     <div class="modal-overlay" id="addResidentModal">
         <div class="modal-card" style="width: 450px;">
             <div class="modal-header"><h2>Novo Morador</h2><button class="btn-action" style="border:none;" onclick="closeModal('addResidentModal')"><i class="ph ph-x"></i></button></div>
@@ -329,6 +342,7 @@
         </div>
     </div>
 
+    <!-- EDITAR MORADOR -->
     <div class="modal-overlay" id="editResidentModal">
         <div class="modal-card" style="width: 450px;">
             <div class="modal-header"><h2>Editar Morador</h2><button class="btn-action" style="border:none;" onclick="closeModal('editResidentModal')"><i class="ph ph-x"></i></button></div>
@@ -343,6 +357,7 @@
         </div>
     </div>
 
+    <!-- ADD PORTEIRO -->
     <div class="modal-overlay" id="addPorteiroModal">
         <div class="modal-card" style="width: 400px;">
             <div class="modal-header"><h2>Novo Porteiro</h2><button class="btn-action" style="border:none;" onclick="closeModal('addPorteiroModal')"><i class="ph ph-x"></i></button></div>
@@ -351,6 +366,7 @@
         </div>
     </div>
 
+    <!-- RELEASE MODAL -->
     <div class="modal-overlay" id="releaseModal">
         <div class="modal-card" style="width: 400px; text-align:center;">
             <div class="modal-header"><h2>Validação de Retirada</h2><button class="btn-action" style="border:none;" onclick="closeModal('releaseModal')"><i class="ph ph-x"></i></button></div>
@@ -361,6 +377,7 @@
 
     <div class="toast" id="toastNotification"><i class="ph ph-check-circle" style="font-size: 1.4rem; color: #4ade80;"></i><span id="toast-message"></span></div>
 
+    <!-- FIREBASE INTEGRAÇÃO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -375,10 +392,24 @@
         window.closeModal = (id) => document.getElementById(id).classList.remove('active');
         window.showToast = (msg) => { const t = document.getElementById("toastNotification"); document.getElementById("toast-message").innerText = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 3000); };
         
-        // Simulação de envio de push para o morador
-        window.enviarPushManual = (idInterno) => {
-            showToast(`Lembrete PUSH enviado para o pacote ${idInterno}!`);
-            // Aqui entraria a chamada da Cloud Function no futuro
+        // ENVIO DE PUSH PARA A BASE DE DADOS (AGORA FUNCIONA DE VERDADE)
+        window.enviarPushManual = async (idInterno, apt, bloco, remetente, codigo) => {
+            try {
+                await addDoc(collection(db, "notificacoes"), {
+                    apt: apt,
+                    bloco: bloco || "",
+                    remetente: remetente,
+                    codigoSeguranca: codigo,
+                    mensagem: `Hey Chegoou a sua encomenda de ${remetente}! Quando puder retire na portaria.`,
+                    lida: false,
+                    timestamp: new Date().getTime(),
+                    idInterno: idInterno
+                });
+                showToast(`Lembrete PUSH enviado para o pacote ${idInterno}!`);
+            } catch (error) {
+                console.error("Erro ao enviar push:", error);
+                alert("Erro ao enviar notificação.");
+            }
         };
 
         window.switchPCView = (viewId, el) => {
@@ -502,7 +533,6 @@
                 const matchSearch = `${p.idInterno} ${p.bloco||''} ${p.apt} ${p.remetente} ${nomeBusca}`.toLowerCase().includes(search);
                 
                 let matchDate = true;
-                // Correção do filtro de datas considerando apenas a string no formato YYYY-MM-DD
                 if(dStart && p.dataEntradaISO && p.dataEntradaISO < dStart) matchDate = false;
                 if(dEnd && p.dataEntradaISO && p.dataEntradaISO > dEnd) matchDate = false;
                 
@@ -518,8 +548,8 @@
                 const badge = `<span class="badge badge-status ${isP ? 'badge-pending' : 'badge-completed'}">${p.status}</span>`;
                 const action = isP ? `<button class="btn-action" onclick="document.getElementById('release-code-input').value=''; openModal('releaseModal')" title="Baixa Manual"><i class="ph ph-key"></i></button>` : '-';
                 
-                // Ícone de Push anexado ao Destinatário
-                const pushIcon = isP ? `<i class="ph ph-paper-plane-tilt push-icon" title="Enviar Lembrete Push" onclick="enviarPushManual('${p.idInterno}')"></i>` : '';
+                // Ícone de Push AGORA PASSA OS DADOS CORRETOS
+                const pushIcon = isP ? `<i class="ph ph-paper-plane-tilt push-icon" title="Enviar Lembrete Push" onclick="enviarPushManual('${p.idInterno}', '${p.apt}', '${p.bloco || ""}', '${p.remetente}', '${p.codigoSeguranca}')"></i>` : '';
                 const nomeExibicao = p.nomeMorador ? `<br><span style="font-size:0.75rem; color:var(--text-muted);">${p.nomeMorador}</span>` : '';
 
                 tbody.innerHTML += `<tr>

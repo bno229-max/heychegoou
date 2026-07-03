@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- PWA META TAGS PORTARIA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e293b">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
     <title>Hey Chegoou | Portaria Mobile</title>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,8 +35,8 @@
         .app-title { font-size: 1.1rem; color:white; font-weight: 700; }
         .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; font-size: 14px; overflow: hidden; }
 
-        /* APP CONTENT */
-        .app-content { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; background:#f8fafc;}
+        /* APP CONTENT - CORREÇÃO DE PADDING INFERIOR PARA NAVBAR */
+        .app-content { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 90px; display: flex; flex-direction: column; gap: 16px; background:#f8fafc;}
         .app-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border: 1px solid var(--border-color); }
         .badge { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; cursor: pointer; border: 1px solid #cbd5e1; background: #f1f5f9; color: #475569;}
         .badge-status { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; cursor: default;}
@@ -43,12 +48,13 @@
         .app-photo-ph { width: 100%; height: 160px; background: #f1f5f9; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; border: 1px dashed #cbd5e1; cursor:pointer; overflow: hidden;}
         .app-photo-ph.captured { border: 2px solid var(--success); }
 
-        /* NAV & FAB */
-        .app-bottom-nav { background: #fff; border-top: 1px solid var(--border-color); padding: 12px 20px 24px; display: flex; justify-content: space-around; z-index: 10; }
+        /* NAV & FAB - CORREÇÃO DE FIXAÇÃO INFERIOR E SAFE-AREA PARA IPHONE */
+        .app-bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 1px solid var(--border-color); padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); display: flex; justify-content: space-around; z-index: 100; }
         .app-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 0.7rem; font-weight: 600; cursor: pointer; background: none; border: none; }
         .app-nav-item.active { color: var(--primary); }
         .app-nav-item i { font-size: 1.4rem; }
-        .fab-button { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4); border: none; cursor: pointer; z-index: 50; }
+        
+        .fab-button { position: fixed; bottom: calc(85px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4); border: none; cursor: pointer; z-index: 50; }
 
         /* MODAL */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.2s; }
@@ -61,6 +67,7 @@
 </head>
 <body>
 
+    <!-- TELA LOGIN -->
     <div id="auth-view" class="active-system-view">
         <div class="auth-logo"><i class="ph ph-buildings" style="color:var(--primary);"></i> Hey Chegoou</div>
         <p style="color:#94a3b8; font-size:0.85rem; margin-bottom: 24px;">Portaria Mobile</p>
@@ -76,6 +83,7 @@
         </div>
     </div>
 
+    <!-- TELA APP -->
     <div id="app-view">
         <div class="app-header">
             <div><h3 class="app-title">Portaria</h3><span style="font-size: 0.8rem; color:#94a3b8;" id="porteiro-name-display">Carregando...</span></div>
@@ -83,11 +91,13 @@
             <button style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;" onclick="fazerLogout()"><i class="ph ph-sign-out"></i></button>
         </div>
 
+        <!-- ABA LISTA -->
         <div class="app-content" id="porteiro-list-view">
             <h4 style="font-size: 0.8rem; color:#64748b; text-transform:uppercase; font-weight:600;">Últimos Registos</h4>
             <div id="porteiro-packages-list"></div>
         </div>
 
+        <!-- ABA FORMULÁRIO (NOVA ENCOMENDA) -->
         <div class="app-content" id="porteiro-form-view" style="display:none; background:#fff;">
             <h3 style="margin-bottom:16px; color:#0f172a; font-size:1.1rem;">Nova Encomenda</h3>
             <div style="display:flex; gap:10px;">
@@ -98,6 +108,7 @@
             </div>
             <div class="form-group"><label>Remetente *</label>
                 <input type="text" id="mob-remetente" class="form-control">
+                <!-- TAGS ATUALIZADAS -->
                 <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; font-size:0.7rem;">
                     <span class="badge" onclick="document.getElementById('mob-remetente').value='Mercado Livre'">Mercado Livre</span>
                     <span class="badge" onclick="document.getElementById('mob-remetente').value='Amazon'">Amazon</span>
@@ -122,6 +133,7 @@
             </div>
         </div>
 
+        <!-- ABA PERFIL -->
         <div class="app-content" id="porteiro-profile-view" style="display:none; background:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h4 style="font-size: 0.8rem; color:#64748b; text-transform:uppercase; font-weight:600;">Meu Perfil</h4>
@@ -136,6 +148,7 @@
             <div class="form-group"><label>Nome na Portaria</label><input type="text" id="prof-nome" class="form-control"></div>
         </div>
 
+        <!-- FAB E MENU INFERIOR -->
         <button class="fab-button" id="porteiro-fab" onclick="switchTab('form', null)"><i class="ph ph-plus"></i></button>
         <div class="app-bottom-nav">
             <button class="app-nav-item active" id="nav-list" onclick="switchTab('list', this)"><i class="ph ph-list-checks"></i> Fila</button>
@@ -144,6 +157,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE BAIXA -->
     <div class="modal-overlay" id="releaseModal">
         <div class="modal-card">
             <h2 style="font-size:1.1rem; margin-bottom:10px;">Baixa de Encomenda</h2>
@@ -159,6 +173,19 @@
     </div>
 
     <div class="toast" id="toastNotification"><i class="ph ph-check-circle" style="font-size: 1.4rem; color: #4ade80;"></i><span id="toast-message"></span></div>
+
+    <!-- REGISTO DO SERVICE WORKER (PWA PORTARIA) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then((reg) => {
+                    console.log('SW Portaria Registado!', reg.scope);
+                }).catch((err) => {
+                    console.log('SW Falhou', err);
+                });
+            });
+        }
+    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
