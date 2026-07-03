@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0284c7">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <title>Hey Chegoou | App Morador</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f3f4f6; --bg-app: #f8fafc;
+            --primary: #0284c7; --success: #16a34a; --text-main: #334155; --text-muted: #64748b; --border-color: #e2e8f0; --radius: 6px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body { background: var(--bg-app); height: 100vh; overflow: hidden; display: flex; flex-direction: column; margin: 0; }
+
+        .active-system-view { display: flex !important; }
+        #auth-view, #app-view { display: none; width: 100%; height: 100%; flex-direction: column; }
+
+        /* AUTH */
+        #auth-view { background: #0f172a; align-items: center; justify-content: center; padding: 24px; text-align: center;}
+        .auth-logo { font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 24px; }
+        .form-control { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #cbd5e1; border-radius: var(--radius); outline: none; }
+        .btn-primary { background: var(--primary); color: #fff; border: none; padding: 12px 20px; border-radius: var(--radius); font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; width: 100%; }
+        .auth-link { color: var(--primary); font-size: 0.85rem; font-weight: 500; cursor: pointer; text-decoration: none; display:block; margin-top: 16px; }
+
+        /* APP HEADER */
+        .app-header { background: #fff; padding: 20px 20px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+        .app-title { font-size: 1.1rem; color:#0f172a; font-weight: 700; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; font-size: 14px; overflow: hidden; cursor:pointer;}
+
+        /* APP CONTENT & CARDS */
+        .app-content { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+        .app-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border: 1px solid var(--border-color); }
+        .badge { padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        .badge-pending { background: #f0f9ff; color: var(--primary); }
+        .badge-completed { background: #dcfce7; color: var(--success); }
+        
+        .app-photo-ph { width: 100%; height: 140px; background: #f8fafc; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; border: 1px dashed #cbd5e1; margin-bottom: 12px; overflow: hidden;}
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; flex: 1; }
+        .form-group label { font-size: 0.8rem; font-weight: 600; color: #475569;}
+
+        /* NAV */
+        .app-bottom-nav { background: #fff; border-top: 1px solid var(--border-color); padding: 12px 20px 24px; display: flex; justify-content: space-around; z-index: 10; }
+        .app-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 0.7rem; font-weight: 600; cursor: pointer; background: none; border: none; }
+        .app-nav-item.active { color: var(--primary); }
+        .app-nav-item i { font-size: 1.4rem; }
+
+        /* PUSH BANNER */
+        .push-alert { position: absolute; top: -100px; left: 16px; right: 16px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: flex; gap: 12px; transition: 0.4s; z-index: 100; border: 1px solid rgba(0,0,0,0.05); }
+        .push-alert.show { top: 16px; }
+
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #0f172a; color: #fff; padding: 14px 24px; border-radius: var(--radius); font-weight: 500; display: flex; align-items: center; gap: 12px; opacity: 0; transition: 0.3s; z-index: 2000; white-space: nowrap;}
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div id="morador-push" class="push-alert">
+        <div style="background: var(--primary); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff;"><i class="ph ph-bell-ringing"></i></div>
+        <div style="flex:1;">
+            <strong style="display:block; font-size:0.9rem; color:#0f172a;">Aviso da Portaria</strong>
+            <span id="morador-push-text" style="font-size:0.8rem; color:#475569;"></span>
+        </div>
+    </div>
+    
+    <div id="auth-view" class="active-system-view">
+        <div class="auth-logo"><i class="ph ph-buildings" style="color:var(--primary);"></i> Hey Chegoou</div>
+        <div style="width:100%; max-width:350px;">
+            <input type="email" id="login-email" class="form-control" placeholder="E-mail do Morador">
+            <input type="password" id="login-pwd" class="form-control" placeholder="Senha">
+            
+            <div style="display:flex; gap:10px; margin-bottom:16px;">
+                <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
+                <button class="btn-primary" style="background:transparent; border:1px solid #fff;" onclick="criarAcesso()">Criar Acesso</button>
+            </div>
+            <span class="auth-link" onclick="recuperarSenha()">Esqueci minha senha</span>
+        </div>
+    </div>
+
+    <div id="app-view">
+        <div class="app-header">
+            <div>
+                <h3 class="app-title" id="morador-header-name">Olá, Morador</h3>
+                <span style="font-size: 0.8rem; color:#64748b;" id="morador-header-local">Carregando...</span>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <div class="avatar" id="morador-header-avatar" onclick="switchAppTab('profile', document.querySelectorAll('.app-nav-item')[1])">M</div>
+                <button style="background:none; border:none; color:#0f172a; font-size:1.5rem; cursor:pointer;" onclick="fazerLogout()"><i class="ph ph-sign-out"></i></button>
+            </div>
+        </div>
+
+        <div class="app-content" id="app-tab-home">
+            <h4 style="font-size: 0.8rem; color:#64748b; text-transform:uppercase; font-weight:600;">Minhas Encomendas</h4>
+            <div id="morador-packages-list"></div>
+        </div>
+
+        <div class="app-content" id="app-tab-profile" style="display:none; background:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h4 style="font-size: 0.8rem; color:#64748b; text-transform:uppercase; font-weight:600;">O Meu Perfil</h4>
+                <button class="btn-primary" style="width:auto; padding:6px 12px; font-size:0.8rem;" onclick="salvarPerfil()"><i class="ph ph-floppy-disk"></i> Salvar</button>
+            </div>
+
+            <div style="text-align:center; margin-bottom: 24px;">
+                <input type="file" id="foto-perfil" accept="image/*" style="display:none;" onchange="previewFotoPerfil(event)">
+                <div class="avatar" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 10px;" id="profile-pic-container">M</div>
+                <button class="btn-primary" style="background:#f1f5f9; color:#0f172a; width:auto; display:inline-flex; padding:8px 16px;" onclick="document.getElementById('foto-perfil').click()"><i class="ph ph-camera"></i> Alterar Foto</button>
+            </div>
+            <div class="form-group"><label>Nome</label><input type="text" id="prof-nome" class="form-control"></div>
+            <div class="form-group"><label>Telefone</label><input type="text" id="prof-tel" class="form-control"></div>
+            <div style="display:flex; gap:10px;">
+                <div class="form-group"><label>Bloco/Torre (Opcional)</label><input type="text" id="prof-bloco" class="form-control" placeholder="Ex: Bloco A"></div>
+                <div class="form-group"><label>Apartamento *</label><input type="text" id="prof-apt" class="form-control" placeholder="Ex: 104"></div>
+            </div>
+            
+            <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:20px; padding:10px; background:#f1f5f9; border-radius:6px;">Insira o número do seu Apartamento para encontrar as suas encomendas.</p>
+        </div>
+
+        <div class="app-bottom-nav">
+            <button class="app-nav-item active" onclick="switchAppTab('home', this)"><i class="ph ph-package"></i> Pacotes</button>
+            <button class="app-nav-item" onclick="switchAppTab('profile', this)"><i class="ph ph-user"></i> Perfil</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toastNotification"><i class="ph ph-check-circle" style="font-size: 1.4rem; color: #4ade80;"></i><span id="toast-message"></span></div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then((reg) => {
+                    console.log('Service Worker Registado!', reg);
+                }).catch((err) => {
+                    console.log('Service Worker Falhou', err);
+                });
+            });
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyA-NsOSEHJC8MPXEhAzbsVcDj2Z9lkQkFs", authDomain: "hey-chegoou.firebaseapp.com", projectId: "hey-chegoou", storageBucket: "hey-chegoou.firebasestorage.app", messagingSenderId: "481787472500", appId: "1:481787472500:web:16955771ee845086173f21" };
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+        
+        let usuarioAtual = null; let fotoPerfilBase64 = ""; let primeiraCarga = true;
+
+        const showToast = (msg) => { const t = document.getElementById("toastNotification"); document.getElementById("toast-message").innerText = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 3000); };
+
+        window.switchAppTab = (tabId, el) => {
+            document.querySelectorAll('.app-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.app-nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById(`app-tab-${tabId}`).style.display = 'flex'; el.classList.add('active');
+        };
+
+        window.previewFotoPerfil = (e) => {
+            const file = e.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onloadend = () => { fotoPerfilBase64 = reader.result; atualizarImagensPerfilNaUI(fotoPerfilBase64); };
+            reader.readAsDataURL(file);
+        };
+        function atualizarImagensPerfilNaUI(imgData) {
+            if(!imgData) return;
+            const imgHTML = `<img src="${imgData}" style="width:100%; height:100%; object-fit:cover;">`;
+            document.getElementById('profile-pic-container').innerHTML = imgHTML;
+            document.getElementById('morador-header-avatar').innerHTML = imgHTML;
+        }
+
+        function pedirPermissaoNotificacao() {
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if(permission === "granted") { showToast("Notificações ativadas!"); }
+                });
+            }
+        }
+
+        // AUTH
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                usuarioAtual = user;
+                document.getElementById('auth-view').classList.remove('active-system-view');
+                document.getElementById('app-view').classList.add('active-system-view');
+                await carregarDadosPerfil(user.uid, user.email);
+                pedirPermissaoNotificacao(); // Pedir push nativo quando entra
+            } else {
+                usuarioAtual = null;
+                document.getElementById('app-view').classList.remove('active-system-view');
+                document.getElementById('auth-view').classList.add('active-system-view');
+            }
+        });
+
+        window.fazerLogin = () => signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pwd').value).catch(e => alert("Erro: " + e.message));
+        window.criarAcesso = () => createUserWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pwd').value).then(()=>showToast("Acesso Criado!")).catch(e => alert(e.message));
+        window.recuperarSenha = () => sendPasswordResetEmail(auth, document.getElementById('login-email').value).then(()=>alert("E-mail enviado!")).catch(e => alert(e.message));
+        window.fazerLogout = () => signOut(auth);
+
+        // PERFIL
+        async function carregarDadosPerfil(uid, email) {
+            try {
+                const docSnap = await getDoc(doc(db, "moradores", uid));
+                if (docSnap.exists()) {
+                    const d = docSnap.data();
+                    document.getElementById('prof-nome').value = d.nome || ""; document.getElementById('prof-tel').value = d.telefone || "";
+                    document.getElementById('prof-bloco').value = d.bloco || ""; document.getElementById('prof-apt').value = d.apt || "";
+                    if (d.foto) { fotoPerfilBase64 = d.foto; atualizarImagensPerfilNaUI(d.foto); }
+                    atualizarCabecalho(d.nome, d.bloco, d.apt);
+                    if(d.apt) iniciarEscutaEncomendas(d.bloco, d.apt);
+                } else {
+                    atualizarCabecalho(email.split('@')[0], "", "");
+                    document.getElementById('morador-packages-list').innerHTML = `<p style="text-align:center; color:#94a3b8; padding: 40px 20px;">Complete seu perfil com o número do seu Apartamento na aba "Perfil" para ver as suas encomendas.</p>`;
+                }
+            } catch (e) { console.log(e); }
+        }
+
+        window.salvarPerfil = async () => {
+            if(!usuarioAtual) return;
+            const nome = document.getElementById('prof-nome').value; const telefone = document.getElementById('prof-tel').value;
+            const bloco = document.getElementById('prof-bloco').value; const apt = document.getElementById('prof-apt').value;
+            
+            if(!apt) return showToast("Apartamento é obrigatório!");
+
+            try {
+                const payload = { nome, telefone, bloco, apt, email: usuarioAtual.email };
+                if (fotoPerfilBase64) payload.foto = fotoPerfilBase64;
+                await setDoc(doc(db, "moradores", usuarioAtual.uid), payload, { merge: true });
+                atualizarCabecalho(nome, bloco, apt); 
+                iniciarEscutaEncomendas(bloco, apt);
+                showToast("Perfil salvo com sucesso!");
+                pedirPermissaoNotificacao();
+            } catch(e) { alert("Erro ao salvar: " + e.message); }
+        };
+
+        function atualizarCabecalho(nome, bloco, apt) {
+            const n = nome ? nome.split(' ')[0] : "Morador";
+            document.getElementById('morador-header-name').innerText = `Olá, ${n}`;
+            document.getElementById('morador-header-local').innerText = apt ? (bloco ? `${bloco} - Apt ${apt}` : `Apt ${apt}`) : "Falta preencher Perfil";
+            if(!fotoPerfilBase64) {
+                document.getElementById('morador-header-avatar').innerHTML = n.charAt(0).toUpperCase();
+                document.getElementById('profile-pic-container').innerHTML = n.charAt(0).toUpperCase();
+            }
+        }
+
+        // ENCOMENDAS & PUSH
+        let listenerAtivo = null;
+        function iniciarEscutaEncomendas(blocoUsuario, aptUsuario) {
+            if(listenerAtivo) listenerAtivo(); 
+            primeiraCarga = true;
+
+            let q = query(collection(db, "encomendas"), where("apt", "==", aptUsuario));
+
+            listenerAtivo = onSnapshot(q, async (snapshot) => {
+                const list = document.getElementById('morador-packages-list'); list.innerHTML = "";
+                if(snapshot.empty) { list.innerHTML = `<p style="text-align:center; color:#94a3b8; padding: 40px 20px;">Nenhuma encomenda recebida ainda.</p>`; return; }
+
+                if(!primeiraCarga) {
+                    snapshot.docChanges().forEach((change) => {
+                        const d = change.doc.data();
+                        if (change.type === "added" && d.status === "Aguardando retirada") {
+                            if(blocoUsuario && d.bloco && d.bloco.toLowerCase() !== blocoUsuario.toLowerCase()) return;
+                            triggerPushAlert(d.remetente, d.codigoSeguranca);
+                        }
+                    });
+                }
+                primeiraCarga = false;
+
+                let contadorPacotesReais = 0;
+
+                snapshot.forEach((docSnap) => {
+                    const p = docSnap.data(); 
+                    if(blocoUsuario && p.bloco && p.bloco.toLowerCase() !== blocoUsuario.toLowerCase()) return;
+                    
+                    contadorPacotesReais++;
+                    const pendente = p.status === "Aguardando retirada";
+                    const bClass = pendente ? "badge-pending" : "badge-completed";
+                    
+                    const fotoDisplay = p.fotoObjeto ? 
+                        `<img src="${p.fotoObjeto}" style="width:100%; height:100%; object-fit:cover;">` : 
+                        `<i class="ph ph-image" style="font-size:1.5rem;"></i><span style="font-size:0.75rem; margin-top:4px;">Foto não anexada</span>`;
+
+                    let actInfo = pendente ? 
+                        `<div style="background:#f8fafc; border:1px dashed #cbd5e1; padding:12px; border-radius:8px; margin-top:12px; text-align:center;">
+                            <span style="font-size:0.7rem; color:#64748b; text-transform:uppercase;">Código para Liberação</span>
+                            <div style="font-family:monospace; font-size:1.4rem; color:#0f172a; font-weight:700; letter-spacing:1px;">${p.codigoSeguranca}</div>
+                        </div>` : 
+                        `<div style="margin-top:10px; font-size:0.75rem;"><i class="ph ph-check-circle" style="color:var(--success); font-size:1rem; vertical-align:middle;"></i> Retirado em <strong style="color:#0f172a;">${p.dataRetirada || "Data não registada"}</strong></div>`;
+
+                    list.innerHTML += `
+                    <div class="app-card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                            <span style="font-weight:600; color:#0f172a;">${p.remetente} (${p.qty}x)</span>
+                            <span class="badge ${bClass}">${p.status}</span>
+                        </div>
+                        <div class="app-photo-ph">${fotoDisplay}</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.75rem; color:#475569;">
+                            <div><i class="ph ph-calendar-plus"></i> Entrada:<br><strong style="color:#0f172a;">${p.dataEntrada}</strong></div>
+                            <div><i class="ph ph-user"></i> Porteiro:<br><strong style="color:#0f172a;">${p.porteiro || 'Portaria'}</strong></div>
+                        </div>
+                        ${actInfo}
+                    </div>`;
+                });
+
+                if(contadorPacotesReais === 0) list.innerHTML = `<p style="text-align:center; color:#94a3b8; padding: 40px 20px;">Nenhuma encomenda recebida ainda.</p>`;
+            });
+        }
+
+        const triggerPushAlert = async (remetente, codigo) => {
+            let msgDefault = `Sua encomenda de ${remetente} chegou na portaria!`;
+            const snap = await getDoc(doc(db, "config", "comms"));
+            if(snap.exists() && snap.data().pushMsg) {
+                msgDefault = snap.data().pushMsg.replace(/\[REMETENTE\]/g, remetente).replace(/\[CODIGO\]/g, codigo);
+            }
+            
+            // Push NATIVO (Notificação Push do SO/Browser)
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("Hey Chegoou!", { body: msgDefault, icon: "icon-192.png" });
+            }
+
+            // Push Visual na Tela
+            document.getElementById("morador-push-text").innerText = msgDefault;
+            const pushUI = document.getElementById("morador-push"); pushUI.classList.add("show");
+            setTimeout(() => pushUI.classList.remove("show"), 5000);
+        };
+    </script>
+</body>
+</html>
