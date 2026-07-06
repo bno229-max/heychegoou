@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-app: #f8fafc; --primary: #0284c7; --success: #16a34a; --text-muted: #64748b; --border-color: #e2e8f0; --radius: 6px; }
+        :root { --bg-app: #f8fafc; --primary: #0284c7; --success: #16a34a; --text-muted: #64748b; --border-color: #e2e8f0; --radius: 6px; --danger: #ef4444; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg-app); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         .active-system-view { display: flex !important; }
@@ -47,6 +47,23 @@
         .history-toggle { background: #fff; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; color: #475569; font-weight: 600; font-size: 0.85rem; cursor: pointer; text-transform: uppercase; }
         .history-toggle i { transition: transform 0.3s; }
         .history-toggle.open i { transform: rotate(180deg); }
+
+        /* CONTADOR ANIMADO COM EFEITO PULSAR EM SEGUNDO PLANO */
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .badge-pulse { 
+            animation: pulse-red 2s infinite; 
+            background: var(--danger); 
+            color: #fff; 
+            font-size: 0.6rem; 
+            padding: 2px 6px; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            border: 2px solid #fff;
+        }
     </style>
 </head>
 <body>
@@ -73,7 +90,7 @@
             <div style="display:flex; gap:16px; align-items:center;">
                 <div style="position:relative; cursor:pointer;" onclick="document.getElementById('notifModal').classList.add('active')">
                     <i class="ph ph-bell" style="font-size:1.6rem; color:#0f172a;"></i>
-                    <span id="unread-count" style="display:none; position:absolute; top:-4px; right:-6px; background:var(--danger); color:#fff; font-size:0.6rem; padding:2px 5px; border-radius:10px; font-weight:bold;">0</span>
+                    <span id="unread-count" style="display:none; position:absolute; top:-4px; right:-6px;">0</span>
                 </div>
                 <div class="avatar" id="morador-header-avatar" onclick="switchAppTab('profile', document.querySelectorAll('.app-nav-item')[1])">M</div>
             </div>
@@ -82,7 +99,9 @@
         <div class="app-content" id="app-tab-home">
             <h4 style="font-size: 0.8rem; color:#64748b; text-transform:uppercase; font-weight:600;">Para Retirar na Portaria</h4>
             <div id="morador-packages-pending" style="display:flex; flex-direction:column; gap:12px;"></div>
+            
             <hr style="border:none; margin: 8px 0;">
+
             <div class="history-toggle" onclick="toggleHistory(this)">
                 <span>Minhas Retiradas Antigas</span> <i class="ph ph-caret-down"></i>
             </div>
@@ -103,7 +122,8 @@
 
             <div class="form-group"><label>Nome</label><input type="text" id="prof-nome" class="form-control"></div>
             <div style="display:flex; gap:10px;"><div class="form-group"><label>Bloco</label><input type="text" id="prof-bloco" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="prof-apt" class="form-control"></div></div>
-            <button class="btn-primary" style="background:transparent; color:#ef4444; border:1px solid #ef4444; margin-top:20px;" onclick="fazerLogout()"><i class="ph ph-sign-out"></i> Sair do Aplicativo</button>
+            <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:10px; padding:10px; background:#f1f5f9; border-radius:6px;">O número do Apartamento é essencial para associar as tuas encomendas automaticamente.</p>
+            <button class="btn-primary" style="background:transparent; color:var(--danger); border:1px solid var(--danger); margin-top:20px;" onclick="fazerLogout()"><i class="ph ph-sign-out"></i> Sair do Aplicativo</button>
         </div>
 
         <div class="app-bottom-nav">
@@ -112,18 +132,24 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="notifModal"><div class="modal-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;"><h3 style="font-size:1.1rem; color:#0f172a;">Caixa de Mensagens</h3><button style="background:#f1f5f9; border:none; padding:8px; border-radius:50%;" onclick="document.getElementById('notifModal').classList.remove('active')"><i class="ph ph-x"></i></button></div><div id="notif-list" style="display:flex; flex-direction:column; gap:10px;"></div></div></div>
+    <div class="modal-overlay" id="notifModal">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="font-size:1.1rem; color:#0f172a;">Caixa de Mensagens</h3>
+                <button style="background:#f1f5f9; border:none; padding:8px; border-radius:50%;" onclick="document.getElementById('notifModal').classList.remove('active')"><i class="ph ph-x"></i></button>
+            </div>
+            <div id="notif-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+        </div>
+    </div>
 
     <div class="toast" id="toastNotification"><i class="ph ph-check-circle" style="font-size: 1.4rem; color: #4ade80;"></i><span id="toast-message"></span></div>
-
-    <script> if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js'); </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, query, where, onSnapshot, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        // FCM (Preparação)
-        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
+        // IMPORTAÇÃO DE SUCESSO DO FCM
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
         const firebaseConfig = { apiKey: "AIzaSyA-NsOSEHJC8MPXEhAzbsVcDj2Z9lkQkFs", authDomain: "hey-chegoou.firebaseapp.com", projectId: "hey-chegoou", messagingSenderId: "481787472500", appId: "1:481787472500:web:16955771ee845086173f21" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const messaging = getMessaging(app);
@@ -134,25 +160,46 @@
         window.switchAppTab = (tabId, el) => { document.querySelectorAll('.app-content').forEach(c => c.style.display = 'none'); document.querySelectorAll('.app-nav-item').forEach(b => b.classList.remove('active')); document.getElementById(`app-tab-${tabId}`).style.display = 'flex'; el.classList.add('active'); };
         window.toggleHistory = (el) => { const hist = document.getElementById('morador-packages-history'); if(hist.style.display === 'none') { hist.style.display = 'flex'; el.classList.add('open'); } else { hist.style.display = 'none'; el.classList.remove('open'); } };
 
-        // PEDIR PERMISSÃO PARA CLOUD MESSAGING (FCM)
-        function habilitarFCM() {
-            Notification.requestPermission().then((permission) => {
-                if (permission === 'granted') {
-                    // O Token VAPID gerado na consola Firebase é necessário para Push Real.
-                    // Sem VAPID Key, configuramos a base para PWA notificação local via Service Worker
-                    console.log('Permissão concedida. Token FCM deve ser associado ao backend.');
+        // CONFIGURAÇÃO REGISTO E ATIVAÇÃO DO CLOUD MESSAGING (FCM)
+        async function inicializarTokenFCM(uid) {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('sw.js');
+                    console.log('Service Worker Registado para Push');
+                    
+                    // Pedir permissão e obter o token com a VAPID KEY fornecida
+                    const token = await getToken(messaging, { 
+                        serviceWorkerRegistration: registration,
+                        vapidKey: "BIncWFNP6Sr9ZgURiYR6n-J_ut_ZzORyPqGFOpLTwINzDw5IpRLca-KPAyLl2TcEPaVq_NVoIBt9FgwzHDNn0Sg" 
+                    });
+
+                    if (token) {
+                        console.log("Token FCM Gerado com sucesso:", token);
+                        // Guardar o token único no Firestore para este morador receber as notificações em background
+                        await updateDoc(doc(db, "moradores", uid), { tokenFCM: token });
+                    } else {
+                        console.log('Permissão negada ou nenhum token disponível.');
+                    }
+                } catch (error) {
+                    console.error("Erro na arquitetura de Token FCM:", error);
                 }
-            });
+            }
         }
+
+        // Ouvir notificações caso o utilizador esteja com o app aberto em primeiro plano (Foreground)
+        onMessage(messaging, (payload) => {
+            console.log("Mensagem recebida em foreground:", payload);
+            triggerPushAlert(payload.notification.title, payload.notification.body);
+        });
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 usuarioAtual = user; document.getElementById('auth-view').classList.remove('active-system-view'); document.getElementById('app-view').classList.add('active-system-view');
-                await carregarDadosPerfil(user.uid, user.email); habilitarFCM(); 
+                await carregarDadosPerfil(user.uid, user.email);
+                await inicializarTokenFCM(user.uid); // Ativa o push sempre no login
             } else { document.getElementById('app-view').classList.remove('active-system-view'); document.getElementById('auth-view').classList.add('active-system-view'); }
         });
 
-        // SINCRONIZAR CRIAÇÃO DE CONTA COM ADMIN
         window.criarAcesso = () => {
             const email = document.getElementById('login-email').value; const pwd = document.getElementById('login-pwd').value;
             if(!email || !pwd) return alert("Preencha e-mail e senha!");
@@ -164,7 +211,7 @@
 
         window.fazerLogin = () => signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pwd').value).catch(e => alert(e.message));
         window.fazerLogout = () => signOut(auth);
-        window.recuperarSenha = () => { const email = document.getElementById('login-email').value; if(!email) return alert("Preencha o campo de e-mail!"); sendPasswordResetEmail(auth, email).then(()=>showToast("E-mail enviado!")).catch(e => alert(e.message)); };
+        window.recuperarSenha = () => { const email = document.getElementById('login-email').value; if(!email) return alert("Preencha o campo de e-mail primeiro!"); sendPasswordResetEmail(auth, email).then(()=>showToast("E-mail enviado!")).catch(e => alert(e.message)); };
 
         async function carregarDadosPerfil(uid, email) {
             const docSnap = await getDoc(doc(db, "moradores", uid));
@@ -189,20 +236,41 @@
             carregarDadosPerfil(usuarioAtual.uid, usuarioAtual.email); showToast("Perfil salvo!");
         };
 
-        // NOTIFICAÇÕES E ENCOMENDAS
         let listenerNotif = null;
         function iniciarEscutaNotificacoes() {
             if(listenerNotif) listenerNotif(); primeiraCargaNotif = true;
             listenerNotif = onSnapshot(query(collection(db, "notificacoes"), where("apt", "==", aptAtualString)), (snapshot) => {
                 let notifs = []; snapshot.forEach(d => { notifs.push({ id: d.id, ...d.data() }); });
                 notifs.sort((a,b) => b.timestamp - a.timestamp);
+                
                 let unreadCount = 0; let html = '';
                 notifs.forEach(n => {
                     if(!n.lida) unreadCount++;
-                    html += `<div style="background:${n.lida ? '#fff' : '#f0f9ff'}; border:1px solid ${n.lida ? '#e2e8f0' : '#bae6fd'}; padding:12px; border-radius:8px; margin-bottom:10px;"><strong style="display:block; font-size:0.85rem; color:#0f172a; margin-bottom:4px;">Aviso da Portaria</strong><p style="font-size:0.8rem; color:#475569; margin-bottom:8px;">${n.mensagem}</p>${!n.lida ? `<button onclick="marcarComoLida('${n.id}')" style="background:none; border:none; color:var(--primary); font-size:0.75rem; font-weight:600; cursor:pointer;">Marcar como lida <i class="ph ph-check"></i></button>` : `<span style="font-size:0.7rem; color:#94a3b8;"><i class="ph ph-check-circle"></i> Lida</span>`}</div>`;
+                    const dataObj = new Date(n.timestamp);
+                    const dataFormatada = `${String(dataObj.getDate()).padStart(2,'0')}/${String(dataObj.getMonth()+1).padStart(2,'0')} às ${String(dataObj.getHours()).padStart(2,'0')}:${String(dataObj.getMinutes()).padStart(2,'0')}`;
+                    
+                    html += `<div style="background:${n.lida ? '#fff' : '#f0f9ff'}; border:1px solid ${n.lida ? '#e2e8f0' : '#bae6fd'}; padding:12px; border-radius:8px; margin-bottom:10px; position:relative;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <strong style="font-size:0.85rem; color:#0f172a;">Aviso da Portaria</strong>
+                            <span style="font-size:0.65rem; color:#94a3b8; font-weight:600;">${dataFormatada}</span>
+                        </div>
+                        <p style="font-size:0.8rem; color:#475569; margin-bottom:8px;">${n.mensagem}</p>
+                        ${!n.lida ? `<button onclick="marcarComoLida('${n.id}')" style="background:none; border:none; color:var(--primary); font-size:0.75rem; font-weight:600; cursor:pointer;">Marcar como lida <i class="ph ph-check"></i></button>` : `<span style="font-size:0.7rem; color:#94a3b8;"><i class="ph ph-check-circle"></i> Lida</span>`}
+                    </div>`;
                 });
+                
                 document.getElementById('notif-list').innerHTML = html || `<p style="text-align:center; color:#94a3b8; font-size:0.8rem; padding: 20px;">Sem mensagens.</p>`;
-                const badge = document.getElementById('unread-count'); if(unreadCount > 0) { badge.innerText = unreadCount; badge.style.display = 'block'; } else { badge.style.display = 'none'; }
+                
+                const badge = document.getElementById('unread-count'); 
+                if(unreadCount > 0) { 
+                    badge.innerText = unreadCount; 
+                    badge.style.display = 'block';
+                    badge.className = 'badge-pulse';
+                } else { 
+                    badge.style.display = 'none'; 
+                    badge.className = '';
+                }
+
                 if (!primeiraCargaNotif) { snapshot.docChanges().forEach((change) => { const n = change.doc.data(); if (change.type === "added" && !n.lida) triggerPushAlert("Hey Chegoou!", n.mensagem); }); }
                 primeiraCargaNotif = false;
             });
@@ -232,8 +300,7 @@
 
         const triggerPushAlert = (titulo, mensagem) => {
             if ("Notification" in window && Notification.permission === "granted") {
-                // Notificação NATIVA via Service Worker se o app estiver em background/minimizado
-                navigator.serviceWorker.ready.then((registration) => { registration.showNotification(titulo, { body: mensagem, icon: 'icon-192.png' }); });
+                navigator.serviceWorker.ready.then((reg) => { reg.showNotification(titulo, { body: mensagem, icon: 'icon-192.png' }); });
             }
             document.getElementById("morador-push-text").innerText = mensagem; document.getElementById("morador-push").classList.add("show");
             setTimeout(() => document.getElementById("morador-push").classList.remove("show"), 5000);
