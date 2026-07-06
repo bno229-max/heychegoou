@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="manifest.json">
+    <!-- Forçar ícone original arredondado -->
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="theme-color" content="#0284c7">
     <title>Hey Chegoou | Morador</title>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -48,7 +51,6 @@
         .history-toggle i { transition: transform 0.3s; }
         .history-toggle.open i { transform: rotate(180deg); }
 
-        /* CONTADOR ANIMADO COM EFEITO PULSAR EM SEGUNDO PLANO */
         @keyframes pulse-red {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
             70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
@@ -148,7 +150,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, query, where, onSnapshot, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        // IMPORTAÇÃO DE SUCESSO DO FCM
         import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
         const firebaseConfig = { apiKey: "AIzaSyA-NsOSEHJC8MPXEhAzbsVcDj2Z9lkQkFs", authDomain: "hey-chegoou.firebaseapp.com", projectId: "hey-chegoou", messagingSenderId: "481787472500", appId: "1:481787472500:web:16955771ee845086173f21" };
@@ -160,25 +161,19 @@
         window.switchAppTab = (tabId, el) => { document.querySelectorAll('.app-content').forEach(c => c.style.display = 'none'); document.querySelectorAll('.app-nav-item').forEach(b => b.classList.remove('active')); document.getElementById(`app-tab-${tabId}`).style.display = 'flex'; el.classList.add('active'); };
         window.toggleHistory = (el) => { const hist = document.getElementById('morador-packages-history'); if(hist.style.display === 'none') { hist.style.display = 'flex'; el.classList.add('open'); } else { hist.style.display = 'none'; el.classList.remove('open'); } };
 
-        // CONFIGURAÇÃO REGISTO E ATIVAÇÃO DO CLOUD MESSAGING (FCM)
         async function inicializarTokenFCM(uid) {
             if ('serviceWorker' in navigator) {
                 try {
                     const registration = await navigator.serviceWorker.register('sw.js');
                     console.log('Service Worker Registado para Push');
                     
-                    // Pedir permissão e obter o token com a VAPID KEY fornecida
                     const token = await getToken(messaging, { 
                         serviceWorkerRegistration: registration,
                         vapidKey: "BIncWFNP6Sr9ZgURiYR6n-J_ut_ZzORyPqGFOpLTwINzDw5IpRLca-KPAyLl2TcEPaVq_NVoIBt9FgwzHDNn0Sg" 
                     });
 
                     if (token) {
-                        console.log("Token FCM Gerado com sucesso:", token);
-                        // Guardar o token único no Firestore para este morador receber as notificações em background
                         await updateDoc(doc(db, "moradores", uid), { tokenFCM: token });
-                    } else {
-                        console.log('Permissão negada ou nenhum token disponível.');
                     }
                 } catch (error) {
                     console.error("Erro na arquitetura de Token FCM:", error);
@@ -186,9 +181,7 @@
             }
         }
 
-        // Ouvir notificações caso o utilizador esteja com o app aberto em primeiro plano (Foreground)
         onMessage(messaging, (payload) => {
-            console.log("Mensagem recebida em foreground:", payload);
             triggerPushAlert(payload.notification.title, payload.notification.body);
         });
 
@@ -196,7 +189,7 @@
             if (user) {
                 usuarioAtual = user; document.getElementById('auth-view').classList.remove('active-system-view'); document.getElementById('app-view').classList.add('active-system-view');
                 await carregarDadosPerfil(user.uid, user.email);
-                await inicializarTokenFCM(user.uid); // Ativa o push sempre no login
+                await inicializarTokenFCM(user.uid);
             } else { document.getElementById('app-view').classList.remove('active-system-view'); document.getElementById('auth-view').classList.add('active-system-view'); }
         });
 
