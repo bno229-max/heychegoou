@@ -1,6 +1,6 @@
 {
   "name": "Hey Chegoou",
-  "short_name": "Chegoou",
+  "short_name": "Portaria",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f172a",
