@@ -9,13 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #f3f4f6; --bg-panel: #ffffff; --bg-sidebar: #1e293b;
-            --sidebar-text: #cbd5e1; --sidebar-active: #0f172a;
+            --bg-body: #f3f4f6; --bg-sidebar: #1e293b; --sidebar-text: #cbd5e1; --sidebar-active: #0f172a;
             --border-color: #e2e8f0; --text-main: #334155; --text-muted: #64748b;
             --primary: #0284c7; --primary-hover: #0369a1; --success: #16a34a; --warning: #f59e0b; --danger: #ef4444;
-            --font-family: 'Inter', sans-serif; --radius: 6px;
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --font-family: 'Inter', sans-serif; --radius: 6px; --shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-family); }
         body { background-color: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; font-size: 14px; }
@@ -23,64 +20,60 @@
         #auth-view, #pc-view { display: none; width: 100vw; height: 100vh; }
         .active-system-view { display: flex !important; }
 
-        /* AUTH SCREEN */
         #auth-view { background: #0f172a; align-items: center; justify-content: center; flex-direction: column; }
-        .auth-card { background: #fff; padding: 40px; border-radius: 12px; width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); text-align: center; }
+        .auth-card { background: #fff; padding: 40px; border-radius: 12px; width: 400px; text-align: center; }
         .auth-logo { font-size: 2rem; font-weight: 700; color: #0f172a; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .auth-logo i { color: #38bdf8; font-size: 2.5rem; }
         .auth-input { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #cbd5e1; border-radius: var(--radius); outline: none; }
-        .btn-primary { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: var(--radius); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; transition: 0.2s; width: 100%; }
-        .btn-secondary { background: #fff; color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 16px; border-radius: var(--radius); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; transition: 0.2s; width: 100%; }
-        .auth-link { color: var(--primary); font-size: 0.85rem; font-weight: 500; cursor: pointer; text-decoration: none; display:inline-block; margin-top: 16px; }
+        .btn-primary, .btn-secondary { color: #fff; border: none; padding: 10px 16px; border-radius: var(--radius); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; width: 100%; }
+        .btn-primary { background: var(--primary); } .btn-secondary { background: #fff; color: var(--text-main); border: 1px solid var(--border-color); }
+        .auth-link { color: var(--primary); font-size: 0.85rem; font-weight: 500; cursor: pointer; display:inline-block; margin-top: 16px; text-decoration: none; }
 
-        /* SIDEBAR */
+        /* TRANSIÇÃO PREMIUM NA SIDEBAR */
         .sidebar { width: 260px; background-color: var(--bg-sidebar); color: var(--sidebar-text); display: flex; flex-direction: column; flex-shrink: 0; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sidebar.collapsed { margin-left: -260px; }
+        
         .sidebar-header { padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 16px; }
         .logo { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 700; color: #fff; }
         .logo i { color: #38bdf8; }
         .menu { display: flex; flex-direction: column; flex: 1; padding: 0 12px; gap: 4px; overflow-y:auto; }
         .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--sidebar-text); text-decoration: none; border-radius: var(--radius); font-weight: 500; cursor: pointer; transition: 0.2s; }
-        .menu-item.active { background: var(--primary); color: #fff; box-shadow: var(--shadow); }
-        .menu-item i { font-size: 1.3rem; }
+        .menu-item.active { background: var(--primary); color: #fff; }
         .user-profile { display: flex; align-items: center; gap: 12px; padding: 16px 24px; background: var(--sidebar-active); border-top: 1px solid rgba(255,255,255,0.05); }
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; font-size: 12px; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; }
         
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background: var(--bg-body); position: relative; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background: var(--bg-body); }
         .view-section { display: none; flex-direction: column; flex: 1; padding: 24px; }
         .view-section.active { display: flex; }
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .page-title-wrap { display: flex; align-items: center; gap: 16px; }
-        .sidebar-toggle-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
         .page-title { font-size: 1.5rem; font-weight: 600; color: #0f172a; }
         
-        .search-box { display: flex; align-items: center; gap: 8px; background: #fff; padding: 8px 12px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+        .search-box { display: flex; align-items: center; gap: 8px; background: #fff; padding: 8px 12px; border-radius: var(--radius); border: 1px solid var(--border-color); }
         .search-box input { background: transparent; border: none; outline: none; color: var(--text-main); }
         
         .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 24px; }
-        .kpi-card { background: #fff; padding: 20px; border: 1px solid var(--border-color); border-radius: var(--radius); border-left: 4px solid var(--border-color); cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between; }
+        .kpi-card { background: #fff; padding: 20px; border: 1px solid var(--border-color); border-radius: var(--radius); border-left: 4px solid var(--border-color); cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
         .kpi-card.active-filter { border-left-color: var(--primary); background: #f0f9ff; }
-        .kpi-info h3 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+        .kpi-info h3 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
         .kpi-info p { font-size: 2rem; font-weight: 700; color: #0f172a; line-height: 1; }
         .kpi-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
 
         .bi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-        .bi-panel { background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+        .bi-panel { background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; }
         .bi-panel-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
         .chart-wrapper { position: relative; height: 250px; width: 100%; display: flex; justify-content: center; align-items: center;}
 
-        .table-panel { background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius); box-shadow: var(--shadow); overflow: auto; }
+        .table-panel { background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius); overflow: auto; }
         .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { padding: 12px 20px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; font-weight: 600; border-bottom: 2px solid var(--border-color); background: #fff; }
-        td { padding: 14px 20px; font-size: 0.9rem; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        th { padding: 12px 20px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; border-bottom: 2px solid var(--border-color); }
+        td { padding: 14px 20px; font-size: 0.9rem; border-bottom: 1px solid var(--border-color); }
         
-        .badge { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; cursor: pointer; border: 1px solid #cbd5e1; background: #f1f5f9; color: #475569;}
-        .badge-status { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; cursor: default; }
-        .badge-pending { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
-        .badge-completed { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-        .btn-action { background: #fff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: var(--radius); cursor: pointer; font-size: 0.8rem; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-action:hover { background: #f1f5f9; }
+        .badge { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; background: #f1f5f9; color: #475569;}
+        .badge-pending { background: #fef3c7; color: #b45309; }
+        .badge-completed { background: #dcfce7; color: #15803d; }
+        .btn-action { background: #fff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: var(--radius); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;}
+        .btn-action:hover { background: #f8fafc; }
 
         .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; flex: 1; }
         .form-group label { font-size: 0.85rem; font-weight: 500; color: #475569; }
@@ -90,26 +83,23 @@
         .modal-overlay.active { opacity: 1; pointer-events: all; }
         .modal-card { width: 500px; max-height: 90vh; overflow-y:auto; background: #fff; border-radius: var(--radius); padding: 24px; transform: translateY(-20px); transition: 0.3s; }
         .modal-overlay.active .modal-card { transform: translateY(0); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom:12px;}
         
-        .toast { position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: #fff; padding: 16px 24px; border-radius: var(--radius); font-weight: 500; display: flex; align-items: center; gap: 12px; transform: translateY(100px); opacity: 0; transition: 0.3s; z-index: 2000; box-shadow: var(--shadow-md); }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: #fff; padding: 16px 24px; border-radius: var(--radius); font-weight: 500; display: flex; align-items: center; gap: 12px; transform: translateY(100px); opacity: 0; transition: 0.3s; z-index: 2000; }
         .toast.show { transform: translateY(0); opacity: 1; }
         .panel { padding: 24px; max-width: 600px; background:white; border-radius:6px; border:1px solid #e2e8f0; }
-
         .push-icon { color: var(--primary); cursor: pointer; transition: 0.2s; font-size: 1.1rem; }
         .push-icon:hover { color: var(--primary-hover); transform: scale(1.1); }
     </style>
 </head>
 <body>
 
-    <!-- AUTH -->
     <div id="auth-view" class="active-system-view">
         <div class="auth-card">
             <div class="auth-logo"><i class="ph ph-buildings"></i> Hey Chegoou</div>
-            <p style="color: #64748b; margin-bottom: 24px;">Painel de Gestão (Síndico/Admin)</p>
+            <p style="color: #64748b; margin-bottom: 24px;">Painel de Gestão (Admin)</p>
             <input type="email" class="auth-input" placeholder="E-mail" id="login-email">
             <input type="password" class="auth-input" placeholder="Senha" id="login-pwd">
-            
             <div style="display: flex; gap: 10px; margin-bottom: 16px;">
                 <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
                 <button class="btn-secondary" onclick="criarAcesso()">Criar Acesso</button>
@@ -118,7 +108,6 @@
         </div>
     </div>
 
-    <!-- MAIN APP -->
     <div id="pc-view">
         <aside class="sidebar" id="main-sidebar">
             <div class="sidebar-header"><div class="logo"><i class="ph ph-buildings"></i> Hey Chegoou</div></div>
@@ -135,10 +124,7 @@
             </div>
             <div class="user-profile">
                 <div class="avatar" id="admin-avatar">S</div>
-                <div>
-                    <strong style="display:block; font-size: 0.85rem; color:#f8fafc;" id="display-sindico-name">Síndico</strong>
-                    <span id="display-condo-name" style="font-size: 0.75rem; color: #94a3b8;">Condomínio</span>
-                </div>
+                <div><strong style="display:block; font-size: 0.85rem; color:#f8fafc;" id="display-sindico-name">Síndico</strong><span id="display-condo-name" style="font-size: 0.75rem; color: #94a3b8;">Condomínio</span></div>
             </div>
         </aside>
 
@@ -146,8 +132,10 @@
             <!-- ABA RECEPÇÃO -->
             <section id="pc-dashboard" class="view-section active">
                 <div class="page-header">
-                    <div class="page-title-wrap">
-                        <button class="sidebar-toggle-btn" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list"></i></button>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <button class="btn-action" style="border:none;" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')">
+                            <i class="ph ph-list" style="font-size:1.5rem; color:var(--text-main);"></i>
+                        </button>
                         <h1 class="page-title">Gestão de Encomendas</h1>
                     </div>
                     <div style="display: flex; gap: 12px; align-items:center;">
@@ -166,25 +154,13 @@
                 </div>
                 
                 <div class="kpi-grid">
-                    <div class="kpi-card" onclick="applyFilter('all', this)">
-                        <div class="kpi-info"><h3>Total Recepcionado</h3><p id="count-received">0</p></div>
-                        <div class="kpi-icon" style="background:#e0f2fe; color:#0284c7;"><i class="ph ph-package"></i></div>
-                    </div>
-                    <div class="kpi-card active-filter" onclick="applyFilter('Aguardando retirada', this)">
-                        <div class="kpi-info"><h3>Volume Pendente</h3><p id="count-pending">0</p></div>
-                        <div class="kpi-icon" style="background:#fef3c7; color:#d97706;"><i class="ph ph-clock"></i></div>
-                    </div>
-                    <div class="kpi-card" onclick="applyFilter('Retirada', this)">
-                        <div class="kpi-info"><h3>Entregas Concluídas</h3><p id="count-completed">0</p></div>
-                        <div class="kpi-icon" style="background:#dcfce7; color:#16a34a;"><i class="ph ph-check-circle"></i></div>
-                    </div>
+                    <div class="kpi-card" onclick="applyFilter('all', this)"><div class="kpi-info"><h3>Total Recepcionado</h3><p id="count-received">0</p></div><div class="kpi-icon" style="background:#e0f2fe; color:#0284c7;"><i class="ph ph-package"></i></div></div>
+                    <div class="kpi-card active-filter" onclick="applyFilter('Aguardando retirada', this)"><div class="kpi-info"><h3>Volume Pendente</h3><p id="count-pending">0</p></div><div class="kpi-icon" style="background:#fef3c7; color:#d97706;"><i class="ph ph-clock"></i></div></div>
+                    <div class="kpi-card" onclick="applyFilter('Retirada', this)"><div class="kpi-info"><h3>Entregas Concluídas</h3><p id="count-completed">0</p></div><div class="kpi-icon" style="background:#dcfce7; color:#16a34a;"><i class="ph ph-check-circle"></i></div></div>
                 </div>
                 
                 <div class="table-panel">
-                    <div class="table-header">
-                        <h2 id="table-title">Registros Pendentes</h2>
-                        <button class="btn-action" style="border:none;" onclick="limparFiltros()"><i class="ph ph-x"></i> Limpar Filtros</button>
-                    </div>
+                    <div class="table-header"><h2 id="table-title">Registros</h2><button class="btn-action" style="border:none;" onclick="limparFiltros()"><i class="ph ph-x"></i> Limpar Filtros</button></div>
                     <table>
                         <thead><tr><th>Cód. Interno</th><th>Destinatário (Apt)</th><th>Remetente</th><th>Tamanho / Qtd</th><th>Porteiro</th><th>Entrada</th><th>Status</th><th>Ações</th></tr></thead>
                         <tbody id="table-body-packages"></tbody>
@@ -195,14 +171,20 @@
             <!-- ABA DASHBOARDS -->
             <section id="pc-indicadores" class="view-section">
                 <div class="page-header">
-                    <div class="page-title-wrap">
-                        <button class="sidebar-toggle-btn" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list"></i></button>
-                        <h1 class="page-title">Dashboards</h1>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <button class="btn-action" style="border:none;" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list" style="font-size:1.5rem;"></i></button>
+                        <h1 class="page-title">Dashboards Gerenciais</h1>
+                    </div>
+                    <div class="search-box">
+                        <i class="ph ph-funnel" style="color:var(--text-muted);"></i>
+                        <input type="date" id="dashDateStart" onchange="renderCharts()" style="font-size:0.8rem; width:110px;" title="Data Inicial">
+                        <span style="color:#cbd5e1; font-weight:bold;">-</span>
+                        <input type="date" id="dashDateEnd" onchange="renderCharts()" style="font-size:0.8rem; width:110px;" title="Data Final">
                     </div>
                 </div>
                 <div class="bi-grid">
                     <div class="bi-panel">
-                        <div class="bi-panel-title">Ocupação do Armazenamento</div>
+                        <div class="bi-panel-title">Ocupação Atual (Pendente)</div>
                         <div class="chart-wrapper">
                             <canvas id="chartCapacity"></canvas>
                             <div style="position:absolute; top:55%; left:50%; transform:translate(-50%, -50%); text-align:center;">
@@ -211,12 +193,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bi-panel"><div class="bi-panel-title">Fluxo Semanal</div><div class="chart-wrapper"><canvas id="chartFlow"></canvas></div></div>
-                    <div class="bi-panel"><div class="bi-panel-title">Ranking de Moradores em Quantidade de Encomendas</div><div class="chart-wrapper"><canvas id="chartTopResidents"></canvas></div></div>
-                    <div class="bi-panel"><div class="bi-panel-title">SLA de Retirada</div>
+                    <div class="bi-panel"><div class="bi-panel-title">Fluxo Semanal (Entradas vs Saídas)</div><div class="chart-wrapper"><canvas id="chartFlow"></canvas></div></div>
+                    <div class="bi-panel"><div class="bi-panel-title">Top 5 Moradores (Volume)</div><div class="chart-wrapper"><canvas id="chartTopResidents"></canvas></div></div>
+                    <div class="bi-panel"><div class="bi-panel-title">SLA de Retirada (Tempo Médio)</div>
                         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height: 100%;">
-                            <span style="font-size: 4rem; font-weight: 700; color: var(--warning);">1.8 <span style="font-size:1rem; color:#0f172a;">Dias</span></span>
-                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top:8px;">Prazo médio histórico para retirada.</p>
+                            <span style="font-size: 4rem; font-weight: 700; color: var(--warning);"><span id="dash-sla-val">0.0</span> <span style="font-size:1rem; color:#0f172a;">Dias</span></span>
+                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top:8px;">Prazo médio dos moradores para buscar pacotes.</p>
                         </div>
                     </div>
                 </div>
@@ -225,20 +207,13 @@
             <!-- ABA MORADORES -->
             <section id="pc-moradores" class="view-section">
                 <div class="page-header">
-                    <div class="page-title-wrap">
-                        <button class="sidebar-toggle-btn" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list"></i></button>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <button class="btn-action" style="border:none;" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list" style="font-size:1.5rem;"></i></button>
                         <h1 class="page-title">Moradores</h1>
                     </div>
-                    <div style="display:flex; gap:10px;">
-                        <input type="file" id="excel-upload" accept=".csv, .xlsx, .xls" style="display:none;" onchange="showToast('Importação iniciada...')">
-                        <button class="btn-secondary" style="width:auto;" onclick="document.getElementById('excel-upload').click()"><i class="ph ph-upload-simple"></i> Importar Planilha</button>
-                        <button class="btn-primary" style="width:auto;" onclick="openModal('addResidentModal')"><i class="ph ph-plus"></i> Adicionar Morador</button>
-                    </div>
+                    <button class="btn-primary" style="width:auto;" onclick="openModal('addResidentModal')"><i class="ph ph-plus"></i> Adicionar Morador</button>
                 </div>
                 <div class="table-panel">
-                    <div style="padding: 12px 20px; background:#f8fafc; font-size:0.8rem; color:var(--text-muted); border-bottom:1px solid var(--border-color);">
-                        <strong>Sincronização Ativa:</strong> Dados atualizados pelos moradores no App Mobile refletem-se aqui via número do Apartamento.
-                    </div>
                     <table>
                         <thead><tr><th>Morador</th><th>Telefone</th><th>Bloco/Torre</th><th>Apt</th><th style="width: 120px;">Ações</th></tr></thead>
                         <tbody id="table-body-residents"></tbody>
@@ -249,32 +224,35 @@
             <!-- ABA PORTEIROS -->
             <section id="pc-porteiros" class="view-section">
                 <div class="page-header">
-                    <div class="page-title-wrap">
-                        <button class="sidebar-toggle-btn" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list"></i></button>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <button class="btn-action" style="border:none;" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list" style="font-size:1.5rem;"></i></button>
                         <h1 class="page-title">Equipe de Portaria</h1>
                     </div>
                     <button class="btn-primary" style="width:auto;" onclick="openModal('addPorteiroModal')"><i class="ph ph-plus"></i> Novo Porteiro</button>
                 </div>
                 <div class="table-panel">
-                    <table>
-                        <thead><tr><th>Nome</th><th>Turno Padrão</th><th>Status</th><th style="width:100px;">Ações</th></tr></thead>
-                        <tbody id="table-body-porteiros"></tbody>
-                    </table>
+                    <table><thead><tr><th>Nome</th><th>Turno Padrão</th><th>Status</th><th style="width:100px;">Ações</th></tr></thead><tbody id="table-body-porteiros"></tbody></table>
                 </div>
             </section>
 
             <!-- ABA COMUNICAÇÃO -->
             <section id="pc-comunicacao" class="view-section">
-                <div class="page-header"><div class="page-title-wrap"><button class="sidebar-toggle-btn" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list"></i></button><h1 class="page-title">Comunicação</h1></div></div>
+                <div class="page-header">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <button class="btn-action" style="border:none;" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list" style="font-size:1.5rem;"></i></button>
+                        <h1 class="page-title">Comunicação e Push</h1>
+                    </div>
+                </div>
                 <div class="panel">
                     <div class="form-group">
                         <label>Mensagem Push Padrão</label>
+                        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Use <strong>[REMETENTE]</strong> e <strong>[CODIGO]</strong> para personalizar.</p>
                         <textarea id="config-push-msg" class="form-control" rows="3">Hey Chegoou a sua encomenda [REMETENTE] quando puder retire com a gente aqui na Portaria.</textarea>
                     </div>
                     <div class="form-group" style="margin-top: 16px;">
                         <label>Intervalo de Lembrete Automático (Horas)</label>
+                        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Reenviar push automaticamente apenas para quem não buscou.</p>
                         <input type="number" id="config-push-interval" class="form-control" value="2" min="1">
-                        <small style="color:var(--text-muted); font-size:0.75rem;">O morador receberá a notificação a cada X horas até retirar a encomenda.</small>
                     </div>
                     <button class="btn-primary" onclick="saveFirebaseConfig('comms')" style="margin-top: 16px;"><i class="ph ph-floppy-disk"></i> Salvar Regras</button>
                 </div>
@@ -282,12 +260,17 @@
 
             <!-- ABA CONFIGURAÇÕES -->
             <section id="pc-config" class="view-section">
-                <div class="page-header"><div class="page-title-wrap"><button class="sidebar-toggle-btn" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list"></i></button><h1 class="page-title">Configurações Gerais</h1></div></div>
+                <div class="page-header">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <button class="btn-action" style="border:none;" onclick="document.getElementById('main-sidebar').classList.toggle('collapsed')"><i class="ph ph-list" style="font-size:1.5rem;"></i></button>
+                        <h1 class="page-title">Configurações Gerais</h1>
+                    </div>
+                </div>
                 <div class="panel">
-                    <div class="form-group"><label>Nome do Condomínio</label><input type="text" id="config-condo-name" class="form-control"></div>
-                    <div class="form-group"><label>Nome do Síndico</label><input type="text" id="config-sindico-name" class="form-control"></div>
-                    <div class="form-group"><label>Blocos/Torres (Separados por vírgula)</label><input type="text" id="config-blocks" class="form-control"></div>
-                    <div class="form-group"><label>Capacidade Total (Volumes)</label><input type="number" id="config-capacity" class="form-control"></div>
+                    <div class="form-group"><label>Condomínio</label><input type="text" id="config-condo-name" class="form-control"></div>
+                    <div class="form-group"><label>Síndico</label><input type="text" id="config-sindico-name" class="form-control"></div>
+                    <div class="form-group"><label>Blocos (Separados por vírgula)</label><input type="text" id="config-blocks" class="form-control"></div>
+                    <div class="form-group"><label>Capacidade (Volumes)</label><input type="number" id="config-capacity" class="form-control"></div>
                     <button class="btn-primary" onclick="saveFirebaseConfig('geral')" style="margin-top: 16px;"><i class="ph ph-floppy-disk"></i> Salvar</button>
                 </div>
             </section>
@@ -295,86 +278,18 @@
     </div>
 
     <!-- MODAIS -->
+    <div class="modal-overlay" id="receiveModal"><div class="modal-card"><div class="modal-header"><h2>Nova Encomenda</h2><button class="btn-action" style="border:none;" onclick="closeModal('receiveModal')"><i class="ph ph-x"></i></button></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Bloco</label><input type="text" id="modal-bloco" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="modal-apt" class="form-control" required></div></div><div class="form-group"><label>Remetente *</label><input type="text" id="modal-remetente" class="form-control" required></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Tamanho</label><select id="modal-tamanho" class="form-control"><option>Pequena</option><option selected>Média</option><option>Grande</option></select></div><div class="form-group"><label>Qtd</label><input type="number" id="modal-quantidade" class="form-control" value="1" min="1"></div></div><div class="form-group"><label>Porteiro</label><select id="modal-porteiro" class="form-control"><option>Admin</option></select></div><button class="btn-primary" style="margin-top:16px;" onclick="handleReceiveAdmin()">Salvar</button></div></div>
+    
+    <!-- MODAL NOVO MORADOR -->
+    <div class="modal-overlay" id="addResidentModal"><div class="modal-card" style="width: 450px;"><div class="modal-header"><h2>Novo Morador</h2><button class="btn-action" style="border:none;" onclick="closeModal('addResidentModal')"><i class="ph ph-x"></i></button></div><div class="form-group"><label>Nome</label><input type="text" id="new-res-name" class="form-control"></div><div class="form-group"><label>Telefone</label><input type="text" id="new-res-phone" class="form-control"></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Bloco</label><input type="text" id="new-res-block" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="new-res-apt" class="form-control" required></div></div><button class="btn-primary" style="margin-top:10px;" onclick="addResidentFirebase()">Salvar Registo</button></div></div>
+    
+    <!-- MODAL EDITAR MORADOR -->
+    <div class="modal-overlay" id="editResidentModal"><div class="modal-card" style="width: 450px;"><div class="modal-header"><h2>Editar Morador</h2><button class="btn-action" style="border:none;" onclick="closeModal('editResidentModal')"><i class="ph ph-x"></i></button></div><input type="hidden" id="edit-res-id"><div class="form-group"><label>Nome</label><input type="text" id="edit-res-name" class="form-control"></div><div class="form-group"><label>Telefone</label><input type="text" id="edit-res-phone" class="form-control"></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Bloco</label><input type="text" id="edit-res-block" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="edit-res-apt" class="form-control" required></div></div><button class="btn-primary" style="margin-top:10px;" onclick="updateResidentFirebase()">Atualizar Registo</button></div></div>
 
-    <!-- NOVA ENCOMENDA (RECEPÇÃO ADMIN) -->
-    <div class="modal-overlay" id="receiveModal">
-        <div class="modal-card">
-            <div class="modal-header"><h2>Nova Encomenda</h2><button class="btn-action" style="border:none;" onclick="closeModal('receiveModal')"><i class="ph ph-x"></i></button></div>
-            <div class="form-group"><label>Nome do Morador (Opcional)</label><input type="text" id="modal-nome-morador" class="form-control" placeholder="Ex: João Silva"></div>
-            <div style="display:flex; gap:16px;">
-                <div class="form-group"><label>Bloco (Opcional)</label><input type="text" id="modal-bloco" class="form-control" placeholder="Ex: Bloco A"></div>
-                <div class="form-group"><label>Apt *</label><input type="text" id="modal-apt" class="form-control" required></div>
-            </div>
-            <div class="form-group"><label>Remetente *</label>
-                <input type="text" id="modal-remetente" class="form-control" required>
-                <!-- TAGS ATUALIZADAS -->
-                <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; font-size:0.7rem;">
-                    <span class="badge" onclick="document.getElementById('modal-remetente').value='Mercado Livre'">Mercado Livre</span>
-                    <span class="badge" onclick="document.getElementById('modal-remetente').value='Amazon'">Amazon</span>
-                    <span class="badge" onclick="document.getElementById('modal-remetente').value='Correios'">Correios</span>
-                    <span class="badge" onclick="document.getElementById('modal-remetente').value='Outros'">Outros</span>
-                </div>
-            </div>
-            <div style="display:flex; gap:16px;">
-                <div class="form-group"><label>Tamanho</label>
-                    <select id="modal-tamanho" class="form-control"><option>Pequena</option><option selected>Média</option><option>Grande</option></select>
-                </div>
-                <div class="form-group"><label>Qtd</label><input type="number" id="modal-quantidade" class="form-control" value="1" min="1"></div>
-            </div>
-            <div class="form-group"><label>Porteiro Responsável</label>
-                <select id="modal-porteiro" class="form-control"><option>Admin</option></select>
-            </div>
-            <button class="btn-primary" style="margin-top:16px;" onclick="handleReceiveAdmin()">Salvar Encomenda</button>
-        </div>
-    </div>
-
-    <!-- ADICIONAR MORADOR -->
-    <div class="modal-overlay" id="addResidentModal">
-        <div class="modal-card" style="width: 450px;">
-            <div class="modal-header"><h2>Novo Morador</h2><button class="btn-action" style="border:none;" onclick="closeModal('addResidentModal')"><i class="ph ph-x"></i></button></div>
-            <div class="form-group"><label>Morador (Nome)</label><input type="text" id="new-res-name" class="form-control"></div>
-            <div class="form-group"><label>Telefone</label><input type="text" id="new-res-phone" class="form-control"></div>
-            <div style="display:flex; gap:16px;">
-                <div class="form-group"><label>Bloco/Torre (Opcional)</label><input type="text" id="new-res-block" class="form-control" placeholder="Ex: Bloco A"></div>
-                <div class="form-group"><label>Apartamento *</label><input type="text" id="new-res-apt" class="form-control" required></div>
-            </div>
-            <button class="btn-primary" style="margin-top:10px;" onclick="addResidentFirebase()">Salvar Registo</button>
-        </div>
-    </div>
-
-    <!-- EDITAR MORADOR -->
-    <div class="modal-overlay" id="editResidentModal">
-        <div class="modal-card" style="width: 450px;">
-            <div class="modal-header"><h2>Editar Morador</h2><button class="btn-action" style="border:none;" onclick="closeModal('editResidentModal')"><i class="ph ph-x"></i></button></div>
-            <input type="hidden" id="edit-res-id">
-            <div class="form-group"><label>Morador (Nome)</label><input type="text" id="edit-res-name" class="form-control"></div>
-            <div class="form-group"><label>Telefone</label><input type="text" id="edit-res-phone" class="form-control"></div>
-            <div style="display:flex; gap:16px;">
-                <div class="form-group"><label>Bloco/Torre (Opcional)</label><input type="text" id="edit-res-block" class="form-control" placeholder="Ex: Bloco A"></div>
-                <div class="form-group"><label>Apartamento *</label><input type="text" id="edit-res-apt" class="form-control" required></div>
-            </div>
-            <button class="btn-primary" style="margin-top:10px;" onclick="updateResidentFirebase()">Atualizar Registo</button>
-        </div>
-    </div>
-
-    <!-- ADD PORTEIRO -->
-    <div class="modal-overlay" id="addPorteiroModal">
-        <div class="modal-card" style="width: 400px;">
-            <div class="modal-header"><h2>Novo Porteiro</h2><button class="btn-action" style="border:none;" onclick="closeModal('addPorteiroModal')"><i class="ph ph-x"></i></button></div>
-            <div class="form-group"><label>Nome</label><input type="text" id="new-porteiro-name" class="form-control"></div>
-            <button class="btn-primary" onclick="addPorteiroFirebase()">Adicionar</button>
-        </div>
-    </div>
-
-    <!-- RELEASE MODAL -->
-    <div class="modal-overlay" id="releaseModal">
-        <div class="modal-card" style="width: 400px; text-align:center;">
-            <div class="modal-header"><h2>Validação de Retirada</h2><button class="btn-action" style="border:none;" onclick="closeModal('releaseModal')"><i class="ph ph-x"></i></button></div>
-            <input type="text" id="release-code-input" class="form-control" placeholder="SAI-XXXXXX" style="text-align:center; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; margin-bottom:16px;">
-            <button class="btn-primary" style="background: var(--success);" onclick="confirmRelease()"><i class="ph ph-shield-check"></i> CONFIRMAR E LIBERAR</button>
-        </div>
-    </div>
-
+    <!-- MODAL NOVO PORTEIRO -->
+    <div class="modal-overlay" id="addPorteiroModal"><div class="modal-card" style="width: 400px;"><div class="modal-header"><h2>Novo Porteiro</h2><button class="btn-action" style="border:none;" onclick="closeModal('addPorteiroModal')"><i class="ph ph-x"></i></button></div><div class="form-group"><label>Nome</label><input type="text" id="new-porteiro-name" class="form-control"></div><button class="btn-primary" onclick="addPorteiroFirebase()">Adicionar</button></div></div>
+    
+    <div class="modal-overlay" id="releaseModal"><div class="modal-card" style="width: 400px; text-align:center;"><div class="modal-header"><h2>Validação de Retirada</h2><button class="btn-action" style="border:none;" onclick="closeModal('releaseModal')"><i class="ph ph-x"></i></button></div><input type="text" id="release-code-input" class="form-control" placeholder="SAI-XXXXXX" style="text-align:center; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; margin-bottom:16px;"><button class="btn-primary" style="background: var(--success);" onclick="confirmRelease()"><i class="ph ph-shield-check"></i> LIBERAR</button></div></div>
     <div class="toast" id="toastNotification"><i class="ph ph-check-circle" style="font-size: 1.4rem; color: #4ade80;"></i><span id="toast-message"></span></div>
 
     <!-- FIREBASE INTEGRAÇÃO -->
@@ -387,274 +302,213 @@
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 
         let encomendasGlobais = []; let currentFilter = "Aguardando retirada"; let chartInstances = {}; let capacidadeVolume = 150;
+        let globalPushMsg = "Hey Chegoou a sua encomenda de [REMETENTE]! Retire na Portaria com o código [CODIGO].";
+        let globalPushInterval = 2;
 
-        window.openModal = (id) => document.getElementById(id).classList.add('active');
-        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+        window.openModal = (id) => document.getElementById(id).classList.add('active'); window.closeModal = (id) => document.getElementById(id).classList.remove('active');
         window.showToast = (msg) => { const t = document.getElementById("toastNotification"); document.getElementById("toast-message").innerText = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 3000); };
         
-        // ENVIO DE PUSH PARA A BASE DE DADOS (AGORA FUNCIONA DE VERDADE)
+        // PUSH MANUAL QUE RESPEITA A MENSAGEM PADRÃO
         window.enviarPushManual = async (idInterno, apt, bloco, remetente, codigo) => {
             try {
+                let msgFormatada = globalPushMsg.replace(/\[REMETENTE\]/g, remetente).replace(/\[CODIGO\]/g, codigo);
                 await addDoc(collection(db, "notificacoes"), {
-                    apt: apt,
-                    bloco: bloco || "",
-                    remetente: remetente,
-                    codigoSeguranca: codigo,
-                    mensagem: `Hey Chegoou a sua encomenda de ${remetente}! Quando puder retire na portaria.`,
-                    lida: false,
-                    timestamp: new Date().getTime(),
-                    idInterno: idInterno
+                    apt: String(apt).trim(), bloco: String(bloco || "").trim(),
+                    remetente: remetente, codigoSeguranca: codigo,
+                    mensagem: msgFormatada, lida: false, timestamp: new Date().getTime(), idInterno: idInterno
                 });
-                showToast(`Lembrete PUSH enviado para o pacote ${idInterno}!`);
-            } catch (error) {
-                console.error("Erro ao enviar push:", error);
-                alert("Erro ao enviar notificação.");
-            }
+                showToast(`Notificação enviada ao Apt ${apt}!`);
+            } catch (error) { alert("Erro ao enviar notificação."); }
         };
 
         window.switchPCView = (viewId, el) => {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
             document.getElementById(viewId).classList.add('active'); el.classList.add('active');
             if(viewId === 'pc-indicadores') setTimeout(renderCharts, 100);
         };
 
-        // AUTH
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('auth-view').classList.remove('active-system-view');
-                document.getElementById('pc-view').classList.add('active-system-view');
-                iniciarEscutasFirebase();
-            } else {
-                document.getElementById('pc-view').classList.remove('active-system-view');
-                document.getElementById('auth-view').classList.add('active-system-view');
-            }
+            if (user) { document.getElementById('auth-view').classList.remove('active-system-view'); document.getElementById('pc-view').classList.add('active-system-view'); iniciarEscutasFirebase(); }
+            else { document.getElementById('pc-view').classList.remove('active-system-view'); document.getElementById('auth-view').classList.add('active-system-view'); }
         });
 
-        window.fazerLogin = () => {
-            const e = document.getElementById('login-email').value; const p = document.getElementById('login-pwd').value;
-            if(!e||!p) return showToast("Preencha email e senha.");
-            signInWithEmailAndPassword(auth, e, p).catch(err => alert("Erro ao entrar: " + err.message));
-        };
-        window.criarAcesso = () => {
-            const e = document.getElementById('login-email').value; const p = document.getElementById('login-pwd').value;
-            if(!e||!p) return showToast("Preencha email e senha para criar acesso.");
-            createUserWithEmailAndPassword(auth, e, p).then(()=>showToast("Acesso Criado!")).catch(err => alert("Erro: " + err.message));
-        };
-        window.recuperarSenha = () => {
-            const e = document.getElementById('login-email').value;
-            if(!e) return alert("Digite seu e-mail no campo acima primeiro.");
-            sendPasswordResetEmail(auth, e).then(() => alert("E-mail de recuperação enviado!")).catch(err => alert(err.message));
-        };
+        window.fazerLogin = () => signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pwd').value).catch(err => alert(err.message));
+        window.criarAcesso = () => createUserWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pwd').value).then(()=>showToast("Acesso Criado!")).catch(err => alert(err.message));
+        window.recuperarSenha = () => { const em = document.getElementById('login-email').value; if(!em) return alert("Preencha o e-mail"); sendPasswordResetEmail(auth, em).then(()=>showToast("E-mail enviado")).catch(e=>alert(e.message)); };
         window.fazerLogout = () => signOut(auth);
 
-        // CONFIG
         window.saveFirebaseConfig = async (tipo) => {
             if(tipo === 'geral') {
-                const nome = document.getElementById('config-condo-name').value;
-                const sindico = document.getElementById('config-sindico-name').value;
-                const blocos = document.getElementById('config-blocks').value.split(',').map(s=>s.trim());
-                capacidadeVolume = parseInt(document.getElementById('config-capacity').value) || 150;
-                await setDoc(doc(db, "config", "geral"), { nome, sindico, blocos, capacidade: capacidadeVolume });
-                showToast("Configurações Salvas");
+                const nome = document.getElementById('config-condo-name').value; const sindico = document.getElementById('config-sindico-name').value;
+                const blocos = document.getElementById('config-blocks').value.split(',').map(s=>s.trim()); capacidadeVolume = parseInt(document.getElementById('config-capacity').value) || 150;
+                await setDoc(doc(db, "config", "geral"), { nome, sindico, blocos, capacidade: capacidadeVolume }); showToast("Configurações Salvas");
             } else {
-                const msg = document.getElementById('config-push-msg').value;
-                const hrs = document.getElementById('config-push-interval').value;
-                await setDoc(doc(db, "config", "comms"), { pushMsg: msg, pushIntervalHrs: hrs }); showToast("Regras Salvas");
+                const msg = document.getElementById('config-push-msg').value; const hrs = document.getElementById('config-push-interval').value;
+                await setDoc(doc(db, "config", "comms"), { pushMsg: msg, pushIntervalHrs: hrs }); showToast("Regras de Comunicação Salvas");
             }
         };
 
         function iniciarEscutasFirebase() {
             onSnapshot(doc(db, "config", "geral"), (docSnap) => {
                 if(docSnap.exists()){
-                    const d = docSnap.data();
-                    document.getElementById('config-condo-name').value = d.nome || "";
-                    document.getElementById('config-sindico-name').value = d.sindico || "";
-                    document.getElementById('display-condo-name').innerText = d.nome || "Condomínio";
-                    document.getElementById('display-sindico-name').innerText = d.sindico || "Síndico";
-                    document.getElementById('admin-avatar').innerText = (d.sindico || "S").charAt(0).toUpperCase();
-                    document.getElementById('config-blocks').value = (d.blocos||[]).join(', ');
-                    document.getElementById('config-capacity').value = d.capacidade || 150;
-                    capacidadeVolume = d.capacidade || 150;
+                    const d = docSnap.data(); document.getElementById('config-condo-name').value = d.nome || ""; document.getElementById('config-sindico-name').value = d.sindico || "";
+                    document.getElementById('display-condo-name').innerText = d.nome || "Condomínio"; document.getElementById('display-sindico-name').innerText = d.sindico || "Síndico";
+                    document.getElementById('config-capacity').value = d.capacidade || 150; capacidadeVolume = d.capacidade || 150;
                 }
             });
+
             onSnapshot(doc(db, "config", "comms"), (docSnap) => {
-                if(docSnap.exists()){ 
-                    document.getElementById('config-push-msg').value = docSnap.data().pushMsg || ""; 
-                    document.getElementById('config-push-interval').value = docSnap.data().pushIntervalHrs || "2"; 
+                if(docSnap.exists()){
+                    globalPushMsg = docSnap.data().pushMsg || globalPushMsg;
+                    globalPushInterval = parseFloat(docSnap.data().pushIntervalHrs || "2");
+                    document.getElementById('config-push-msg').value = docSnap.data().pushMsg || "";
+                    document.getElementById('config-push-interval').value = docSnap.data().pushIntervalHrs || "2";
                 }
             });
 
             onSnapshot(query(collection(db, "encomendas"), orderBy("timestamp", "desc")), (snap) => {
-                encomendasGlobais = []; snap.forEach(doc => encomendasGlobais.push({idDoc: doc.id, ...doc.data()})); filterTable();
+                encomendasGlobais = []; snap.forEach(doc => encomendasGlobais.push({idDoc: doc.id, ...doc.data()})); 
+                filterTable(); if(document.getElementById('pc-indicadores').classList.contains('active')) renderCharts();
             });
 
-            // ESCUTA MORADORES
+            // MORADORES: ESCUTA E CRUD RESTAURADOS
             onSnapshot(collection(db, "moradores"), (snap) => {
                 const tbody = document.getElementById('table-body-residents'); tbody.innerHTML = "";
                 snap.forEach(docSnap => { 
                     const m = docSnap.data(); const id = docSnap.id;
                     tbody.innerHTML += `<tr>
-                        <td><strong style="color:#0f172a;">${m.nome||'Morador'}</strong></td>
-                        <td>${m.telefone||'-'}</td><td>${m.bloco||'-'}</td><td>${m.apt||'-'}</td>
-                        <td>
-                            <button class="btn-action" title="Editar" onclick="openEditResident('${id}', '${m.nome||''}', '${m.telefone||''}', '${m.bloco||''}', '${m.apt||''}')"><i class="ph ph-pencil-simple"></i></button>
-                            <button class="btn-action" title="Deletar" style="color:var(--danger);" onclick="deleteResident('${id}')"><i class="ph ph-trash"></i></button>
-                        </td>
+                        <td><strong style="color:#0f172a;">${m.nome||'Morador'}</strong></td><td>${m.telefone||'-'}</td><td>${m.bloco||'-'}</td><td>${m.apt||'-'}</td>
+                        <td><button class="btn-action" onclick="openEditResident('${id}', '${m.nome||''}', '${m.telefone||''}', '${m.bloco||''}', '${m.apt||''}')"><i class="ph ph-pencil-simple"></i></button> <button class="btn-action" style="color:var(--danger);" onclick="deleteResident('${id}')"><i class="ph ph-trash"></i></button></td>
                     </tr>`;
                 });
             });
 
+            // PORTEIROS: ESCUTA E CRUD RESTAURADOS
             onSnapshot(collection(db, "porteiros"), (snap) => {
                 const tbody = document.getElementById('table-body-porteiros'); tbody.innerHTML = "";
                 const selectPorteiro = document.getElementById('modal-porteiro'); selectPorteiro.innerHTML = `<option>Admin</option>`;
                 snap.forEach(doc => { 
-                    tbody.innerHTML += `<tr><td><strong style="color:#0f172a;">${doc.data().nome}</strong></td><td>Geral</td><td><span class="badge badge-status badge-completed">Ativo</span></td><td><button class="btn-action" style="color:var(--danger);" onclick="delPorteiro('${doc.id}')"><i class="ph ph-trash"></i></button></td></tr>`; 
+                    tbody.innerHTML += `<tr><td><strong style="color:#0f172a;">${doc.data().nome}</strong></td><td>Geral</td><td><span class="badge badge-completed">Ativo</span></td><td><button class="btn-action" style="color:var(--danger);" onclick="delPorteiro('${doc.id}')"><i class="ph ph-trash"></i></button></td></tr>`; 
                     selectPorteiro.innerHTML += `<option value="${doc.data().nome}">${doc.data().nome}</option>`;
                 });
             });
         }
 
+        // --- FUNÇÕES CRUD RESTAURADAS ---
+        window.addResidentFirebase = async () => {
+            const n = document.getElementById('new-res-name').value; const t = document.getElementById('new-res-phone').value; 
+            const b = document.getElementById('new-res-block').value; const a = document.getElementById('new-res-apt').value;
+            if(!a) return alert("Apartamento obrigatório!");
+            await setDoc(doc(db, "moradores", `admin_add_${Date.now()}`), { nome: n, telefone: t, bloco: b, apt: a }); closeModal('addResidentModal'); showToast("Morador Registado!");
+        };
+        window.openEditResident = (id, n, t, b, a) => { document.getElementById('edit-res-id').value=id; document.getElementById('edit-res-name').value=n; document.getElementById('edit-res-phone').value=t; document.getElementById('edit-res-block').value=b; document.getElementById('edit-res-apt').value=a; openModal('editResidentModal'); };
+        window.updateResidentFirebase = async () => {
+            const id = document.getElementById('edit-res-id').value; const p = { nome: document.getElementById('edit-res-name').value, telefone: document.getElementById('edit-res-phone').value, bloco: document.getElementById('edit-res-block').value, apt: document.getElementById('edit-res-apt').value };
+            if(!p.apt) return alert("Apt obrigatório!"); await updateDoc(doc(db, "moradores", id), p); closeModal('editResidentModal'); showToast("Morador Atualizado!");
+        };
+        window.deleteResident = async (id) => { if(confirm("Deseja excluir este morador?")) await deleteDoc(doc(db, "moradores", id)); };
+
+        window.addPorteiroFirebase = async () => { const n = document.getElementById('new-porteiro-name').value; if(!n) return; await addDoc(collection(db, "porteiros"), { nome: n }); closeModal('addPorteiroModal'); document.getElementById('new-porteiro-name').value=''; showToast("Porteiro Adicionado!"); };
+        window.delPorteiro = async (id) => { if(confirm("Remover Porteiro?")) await deleteDoc(doc(db, "porteiros", id)); };
+        // --------------------------------
+
         window.applyFilter = (status, el) => { currentFilter = status; document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active-filter')); if(el) el.classList.add('active-filter'); filterTable(); };
         window.limparFiltros = () => { document.getElementById('dateStart').value = ''; document.getElementById('dateEnd').value = ''; document.getElementById('globalSearch').value = ''; applyFilter('all', document.querySelectorAll('.kpi-card')[0]); };
 
         window.filterTable = () => {
-            const search = document.getElementById('globalSearch').value.toLowerCase();
-            const dStart = document.getElementById('dateStart').value; // Formato YYYY-MM-DD
-            const dEnd = document.getElementById('dateEnd').value;
+            const search = document.getElementById('globalSearch').value.toLowerCase(); const dStart = document.getElementById('dateStart').value; const dEnd = document.getElementById('dateEnd').value;
             const tbody = document.getElementById('table-body-packages'); tbody.innerHTML = "";
-
             let pendentes = 0, concluidas = 0;
             let filtered = encomendasGlobais.filter(p => {
                 if(p.status === "Aguardando retirada") pendentes++; else concluidas++;
                 const matchStatus = currentFilter === 'all' || p.status === currentFilter;
-                
-                const nomeBusca = p.nomeMorador ? p.nomeMorador.toLowerCase() : '';
-                const matchSearch = `${p.idInterno} ${p.bloco||''} ${p.apt} ${p.remetente} ${nomeBusca}`.toLowerCase().includes(search);
-                
-                let matchDate = true;
-                if(dStart && p.dataEntradaISO && p.dataEntradaISO < dStart) matchDate = false;
-                if(dEnd && p.dataEntradaISO && p.dataEntradaISO > dEnd) matchDate = false;
-                
+                const matchSearch = `${p.idInterno} ${p.apt} ${p.remetente}`.toLowerCase().includes(search);
+                let matchDate = true; if(dStart && p.dataEntradaISO < dStart) matchDate = false; if(dEnd && p.dataEntradaISO > dEnd) matchDate = false;
                 return matchStatus && matchSearch && matchDate;
             });
-
-            document.getElementById('count-received').innerText = encomendasGlobais.length;
-            document.getElementById('count-pending').innerText = pendentes;
-            document.getElementById('count-completed').innerText = concluidas;
+            document.getElementById('count-received').innerText = encomendasGlobais.length; document.getElementById('count-pending').innerText = pendentes; document.getElementById('count-completed').innerText = concluidas;
 
             filtered.forEach(p => {
-                const isP = p.status === "Aguardando retirada";
-                const badge = `<span class="badge badge-status ${isP ? 'badge-pending' : 'badge-completed'}">${p.status}</span>`;
-                const action = isP ? `<button class="btn-action" onclick="document.getElementById('release-code-input').value=''; openModal('releaseModal')" title="Baixa Manual"><i class="ph ph-key"></i></button>` : '-';
-                
-                // Ícone de Push AGORA PASSA OS DADOS CORRETOS
-                const pushIcon = isP ? `<i class="ph ph-paper-plane-tilt push-icon" title="Enviar Lembrete Push" onclick="enviarPushManual('${p.idInterno}', '${p.apt}', '${p.bloco || ""}', '${p.remetente}', '${p.codigoSeguranca}')"></i>` : '';
-                const nomeExibicao = p.nomeMorador ? `<br><span style="font-size:0.75rem; color:var(--text-muted);">${p.nomeMorador}</span>` : '';
-
-                tbody.innerHTML += `<tr>
-                    <td style="font-family:monospace; font-weight:600; color:var(--primary);">${p.idInterno}</td>
-                    <td>
-                        <strong style="color:#0f172a; display:inline-flex; align-items:center; gap:6px;">${p.bloco ? p.bloco+' - ' : ''}Apt ${p.apt} ${pushIcon}</strong>
-                        ${nomeExibicao}
-                    </td>
-                    <td>${p.remetente}</td><td>${p.tamanho||'M'} (${p.qty||1}x)</td><td>${p.porteiro}</td><td>${p.dataEntrada}</td><td>${badge}</td><td>${action}</td>
-                </tr>`;
+                const isP = p.status === "Aguardando retirada"; const badge = `<span class="badge ${isP ? 'badge-pending' : 'badge-completed'}">${p.status}</span>`;
+                const action = isP ? `<button class="btn-action" onclick="document.getElementById('release-code-input').value=''; openModal('releaseModal')" title="Baixar"><i class="ph ph-key"></i></button>` : '-';
+                const pushIcon = isP ? `<i class="ph ph-paper-plane-tilt push-icon" title="Notificar" onclick="enviarPushManual('${p.idInterno}', '${p.apt}', '${p.bloco || ""}', '${p.remetente}', '${p.codigoSeguranca}')"></i>` : '';
+                tbody.innerHTML += `<tr><td><strong style="color:var(--primary);">${p.idInterno}</strong></td><td><strong style="color:#0f172a;">${p.bloco ? p.bloco+' - ' : ''}Apt ${p.apt} ${pushIcon}</strong></td><td>${p.remetente}</td><td>${p.tamanho||'M'}</td><td>${p.porteiro}</td><td>${p.dataEntrada}</td><td>${badge}</td><td>${action}</td></tr>`;
             });
         };
 
-        // NOVA ENCOMENDA MANUAL
         window.handleReceiveAdmin = async () => {
-            const nome = document.getElementById('modal-nome-morador').value;
-            const b = document.getElementById('modal-bloco').value; 
-            const a = document.getElementById('modal-apt').value;
-            const r = document.getElementById('modal-remetente').value;
-            const tam = document.getElementById('modal-tamanho').value; 
-            const qty = document.getElementById('modal-quantidade').value;
-            const port = document.getElementById('modal-porteiro').value;
-
-            if(!a || !r) return showToast("Apt e Remetente são obrigatórios!");
-
-            const agora = new Date();
-            // Correção fuso horário para a data do Filtro (YYYY-MM-DD local)
-            const dataISO = `${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,'0')}-${String(agora.getDate()).padStart(2,'0')}`;
-
+            const b = document.getElementById('modal-bloco').value; const a = document.getElementById('modal-apt').value; const r = document.getElementById('modal-remetente').value;
+            if(!a || !r) return showToast("Apt e Remetente obrigatórios!");
+            const agora = new Date(); const dataISO = `${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,'0')}-${String(agora.getDate()).padStart(2,'0')}`;
             await addDoc(collection(db, "encomendas"), {
                 idInterno: `ENT-${Math.floor(100000 + Math.random()*900000)}`, codigoSeguranca: `SAI-${Math.floor(100000 + Math.random()*900000)}`,
-                nomeMorador: nome, bloco: b, apt: a, remetente: r, tamanho: tam, qty: qty, porteiro: port,
-                dataEntrada: `${String(agora.getDate()).padStart(2,'0')}/${String(agora.getMonth()+1).padStart(2,'0')} ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`,
-                dataEntradaISO: dataISO, timestamp: agora.getTime(), status: "Aguardando retirada"
+                bloco: b, apt: a, remetente: r, dataEntrada: `${String(agora.getDate()).padStart(2,'0')}/${String(agora.getMonth()+1).padStart(2,'0')} ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`,
+                dataEntradaISO: dataISO, timestamp: agora.getTime(), status: "Aguardando retirada", porteiro: "Admin"
             });
-            
-            document.getElementById('modal-nome-morador').value = ''; document.getElementById('modal-apt').value = ''; 
-            document.getElementById('modal-remetente').value = ''; document.getElementById('modal-bloco').value = '';
             closeModal('receiveModal'); showToast("Entrada registada!");
         };
 
-        // BAIXA
         window.confirmRelease = async () => {
             const cod = document.getElementById('release-code-input').value.toUpperCase();
-            if(!cod) return;
             const snap = await getDocs(query(collection(db, "encomendas"), where("codigoSeguranca", "==", cod)));
             if(snap.empty) return alert("Código inválido!");
+            const agora = new Date(); const dFormat = `${String(agora.getDate()).padStart(2,'0')}/${String(agora.getMonth()+1).padStart(2,'0')} às ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`;
+            snap.forEach(async d => { await updateDoc(doc(db, "encomendas", d.id), { status: "Retirada", dataRetirada: dFormat, timestampRetirada: agora.getTime() }); });
+            showToast("Baixa confirmada!"); closeModal('releaseModal');
+        };
+
+        // --- LEMBRETE AUTOMÁTICO PARA PENDENTES (WORKER DE BACKGROUND) ---
+        setInterval(() => {
+            if(!globalPushInterval || encomendasGlobais.length === 0) return;
+            const msInterval = globalPushInterval * 60 * 60 * 1000;
+            const now = Date.now();
             
-            const agora = new Date();
-            const dataRetiradaFormat = `${String(agora.getDate()).padStart(2,'0')}/${String(agora.getMonth()+1).padStart(2,'0')} às ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`;
-
-            snap.forEach(async d => { 
-                await updateDoc(doc(db, "encomendas", d.id), { status: "Retirada", dataRetirada: dataRetiradaFormat }); 
+            encomendasGlobais.forEach(async (p) => {
+                if (p.status === "Aguardando retirada") {
+                    const lastNotified = p.lastNotified || p.timestamp;
+                    // Se o tempo configurado já passou desde a última vez que foi notificado ou desde a entrada...
+                    if (now - lastNotified >= msInterval) {
+                        let msgFormatada = globalPushMsg.replace(/\[REMETENTE\]/g, p.remetente).replace(/\[CODIGO\]/g, p.codigoSeguranca);
+                        try {
+                            await addDoc(collection(db, "notificacoes"), {
+                                apt: String(p.apt).trim(), bloco: String(p.bloco||"").trim(),
+                                remetente: p.remetente, codigoSeguranca: p.codigoSeguranca,
+                                mensagem: `(Lembrete Automático) ${msgFormatada}`, lida: false, timestamp: now, idInterno: p.idInterno
+                            });
+                            // Atualiza o tempo no pacote para não disparar novamente até passar o intervalo de novo
+                            await updateDoc(doc(db, "encomendas", p.idDoc), { lastNotified: now });
+                            console.log(`Lembrete auto enviado para Apt ${p.apt}`);
+                        } catch(e) { console.error(e); }
+                    }
+                }
             });
-            showToast("Baixa confirmada!"); closeModal('releaseModal'); document.getElementById('release-code-input').value = '';
-        };
+        }, 60000); // Roda a cada 60 segundos
+        // -----------------------------------------------------------------
 
-        // GESTÃO MORADORES
-        window.addResidentFirebase = async () => {
-            const n = document.getElementById('new-res-name').value; const t = document.getElementById('new-res-phone').value; 
-            const b = document.getElementById('new-res-block').value; const a = document.getElementById('new-res-apt').value;
-            if(!a) return alert("O apartamento é obrigatório!");
-            await setDoc(doc(db, "moradores", `admin_add_${Date.now()}`), { nome: n, telefone: t, bloco: b, apt: a });
-            closeModal('addResidentModal'); showToast("Morador Registado!");
-        };
-        window.openEditResident = (id, nome, tel, bloco, apt) => {
-            document.getElementById('edit-res-id').value = id; document.getElementById('edit-res-name').value = nome;
-            document.getElementById('edit-res-phone').value = tel; document.getElementById('edit-res-block').value = bloco;
-            document.getElementById('edit-res-apt').value = apt; openModal('editResidentModal');
-        };
-        window.updateResidentFirebase = async () => {
-            const id = document.getElementById('edit-res-id').value;
-            const payload = {
-                nome: document.getElementById('edit-res-name').value, telefone: document.getElementById('edit-res-phone').value,
-                bloco: document.getElementById('edit-res-block').value, apt: document.getElementById('edit-res-apt').value
-            };
-            if(!payload.apt) return alert("Apartamento obrigatório!");
-            await updateDoc(doc(db, "moradores", id), payload);
-            closeModal('editResidentModal'); showToast("Morador Atualizado!");
-        };
-        window.deleteResident = async (id) => { if(confirm("Deseja excluir este morador?")) await deleteDoc(doc(db, "moradores", id)); };
+        window.renderCharts = function() {
+            const dStart = document.getElementById('dashDateStart').value; const dEnd = document.getElementById('dashDateEnd').value;
+            let filtered = encomendasGlobais;
+            if(dStart) filtered = filtered.filter(p => p.dataEntradaISO >= dStart);
+            if(dEnd) filtered = filtered.filter(p => p.dataEntradaISO <= dEnd);
 
-        // GESTÃO PORTEIROS
-        window.addPorteiroFirebase = async () => {
-            const n = document.getElementById('new-porteiro-name').value; if(!n) return;
-            await addDoc(collection(db, "porteiros"), { nome: n });
-            closeModal('addPorteiroModal'); document.getElementById('new-porteiro-name').value=''; showToast("Porteiro Adicionado!");
-        };
-        window.delPorteiro = async (id) => { if(confirm("Remover porteiro?")) await deleteDoc(doc(db, "porteiros", id)); };
-
-        // GRÁFICOS
-        function renderCharts() {
-            const ocup = encomendasGlobais.filter(x => x.status === "Aguardando retirada").length;
-            const livre = capacidadeVolume - ocup;
-            document.getElementById('chart-cap-pct').innerText = `${capacidadeVolume > 0 ? Math.round((ocup/capacidadeVolume)*100) : 0}%`;
-            document.getElementById('chart-cap-abs').innerText = `${ocup} / ${capacidadeVolume}`;
-
+            const ocup = encomendasGlobais.filter(x => x.status === "Aguardando retirada").length; const livre = capacidadeVolume - ocup;
+            document.getElementById('chart-cap-pct').innerText = `${capacidadeVolume > 0 ? Math.round((ocup/capacidadeVolume)*100) : 0}%`; document.getElementById('chart-cap-abs').innerText = `${ocup} / ${capacidadeVolume}`;
             if(chartInstances.cap) chartInstances.cap.destroy();
             chartInstances.cap = new Chart(document.getElementById('chartCapacity').getContext('2d'), { type: 'doughnut', data: { labels: ['Ocupado', 'Livre'], datasets: [{ data: [ocup, livre], backgroundColor: ['#0284c7', '#e2e8f0'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins:{legend:{display:false}} } });
 
+            let fIn = [0,0,0,0,0,0,0]; let fOut = [0,0,0,0,0,0,0];
+            filtered.forEach(p => { if(p.timestamp) fIn[new Date(p.timestamp).getDay()]++; if(p.status === "Retirada" && p.timestampRetirada) fOut[new Date(p.timestampRetirada).getDay()]++; });
             if(chartInstances.flow) chartInstances.flow.destroy();
-            chartInstances.flow = new Chart(document.getElementById('chartFlow').getContext('2d'), { type: 'line', data: { labels: ['Seg','Ter','Qua','Qui','Sex'], datasets: [{ label: 'Entradas', data: [12,19,15,22,18], borderColor: '#0284c7', tension: 0.3 }, { label: 'Saídas', data: [10,15,18,14,20], borderColor: '#16a34a', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y:{grid:{color:'#e2e8f0'}}, x:{grid:{display:false}} } } });
+            chartInstances.flow = new Chart(document.getElementById('chartFlow').getContext('2d'), { type: 'line', data: { labels: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'], datasets: [{ label: 'Entradas', data: fIn, borderColor: '#0284c7', tension: 0.3 }, { label: 'Saídas', data: fOut, borderColor: '#16a34a', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y:{grid:{color:'#e2e8f0'}}, x:{grid:{display:false}} } } });
 
+            let aptCounts = {}; filtered.forEach(p => { const a = p.apt || 'N/A'; aptCounts[a] = (aptCounts[a] || 0) + 1; });
+            const topApts = Object.keys(aptCounts).sort((a,b) => aptCounts[b] - aptCounts[a]).slice(0,5);
             if(chartInstances.top) chartInstances.top.destroy();
-            chartInstances.top = new Chart(document.getElementById('chartTopResidents').getContext('2d'), { type: 'bar', data: { labels: ['104', '302', '205'], datasets: [{ label: 'Volumes', data: [15, 12, 8], backgroundColor: '#38bdf8' }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales:{x:{grid:{color:'#e2e8f0'}}, y:{grid:{display:false}}} } });
+            chartInstances.top = new Chart(document.getElementById('chartTopResidents').getContext('2d'), { type: 'bar', data: { labels: topApts, datasets: [{ label: 'Volumes', data: topApts.map(a => aptCounts[a]), backgroundColor: '#38bdf8' }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+
+            let tMs = 0; let cSla = 0;
+            filtered.forEach(p => { if(p.status === "Retirada" && p.timestamp && p.timestampRetirada) { tMs += (p.timestampRetirada - p.timestamp); cSla++; } });
+            document.getElementById('dash-sla-val').innerText = cSla > 0 ? (tMs / (1000 * 60 * 60 * 24)).toFixed(1) : "0.0";
         }
     </script>
 </body>

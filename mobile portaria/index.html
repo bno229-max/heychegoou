@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e293b">
+    <title>Hey Chegoou | Portaria</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-sidebar: #1e293b; --primary: #0284c7; --success: #16a34a; --text-main: #334155; --text-muted: #64748b; --border-color: #e2e8f0; --radius: 6px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #f8fafc; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        .active-system-view { display: flex !important; }
+        #auth-view, #app-view { display: none; width: 100%; height: 100%; flex-direction: column; background: #fff; }
+        
+        #auth-view { background: #0f172a; align-items: center; justify-content: center; padding: 24px; text-align: center;}
+        .form-control { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #cbd5e1; border-radius: var(--radius); outline: none; }
+        .btn-primary { background: var(--primary); color: #fff; border: none; padding: 12px 20px; border-radius: var(--radius); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; width: 100%; }
+        .btn-secondary { background: transparent; color: #fff; border: 1px solid #cbd5e1; padding: 12px 20px; border-radius: var(--radius); font-weight: 600; cursor: pointer; width: 100%; margin-top:10px;}
+        .auth-link { color: var(--primary); font-size: 0.85rem; font-weight: 500; cursor: pointer; display:block; margin-top: 16px; }
+
+        .app-header { background: var(--bg-sidebar); color: white; padding: 20px 20px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; overflow:hidden; }
+
+        .app-content { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 110px; display: flex; flex-direction: column; gap: 16px; background:#f8fafc;}
+        .app-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border: 1px solid var(--border-color); }
+        .badge { padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; cursor: pointer; border: 1px solid #cbd5e1;}
+        .badge-pending { background: #f0f9ff; color: #0284c7; border:none;} .badge-completed { background: #dcfce7; color: #16a34a; border:none; }
+        
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; flex: 1; }
+        .form-group label { font-size: 0.8rem; font-weight: 600; color: #475569; text-transform: uppercase;}
+        
+        .app-photo-ph { width: 100%; height: 160px; background: #f1f5f9; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; border: 1px dashed #cbd5e1; cursor:pointer; overflow: hidden;}
+        
+        .app-bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-radius: 24px 24px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); padding: 14px 20px calc(14px + env(safe-area-inset-bottom)); display: flex; justify-content: space-around; z-index: 100; overflow: hidden;}
+        .app-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 0.7rem; font-weight: 600; cursor: pointer; background: none; border: none; }
+        .app-nav-item.active { color: var(--primary); }
+        .app-nav-item i { font-size: 1.5rem; }
+        
+        .fab-button { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: 64px; height: 64px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); border: none; cursor: pointer; z-index: 50; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.2s; }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-card { width: 90%; max-width: 400px; background: #fff; border-radius: var(--radius); padding: 24px; text-align: center; }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #0f172a; color: #fff; padding: 14px 24px; border-radius: var(--radius); font-weight: 500; display: flex; align-items: center; gap: 12px; opacity: 0; transition: 0.3s; z-index: 2000; }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        .history-toggle { background: #fff; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; color: #475569; font-weight: 600; font-size: 0.85rem; cursor: pointer; text-transform: uppercase; }
+        .history-toggle i { transition: transform 0.3s; }
+        .history-toggle.open i { transform: rotate(180deg); }
+    </style>
+</head>
+<body>
+
+    <div id="auth-view" class="active-system-view">
+        <div style="width:100%; max-width:350px;">
+            <div style="font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 24px;"><i class="ph ph-buildings" style="color:var(--primary);"></i> Hey Chegoou</div>
+            <input type="email" id="login-email" class="form-control" placeholder="E-mail da Portaria">
+            <input type="password" id="login-pwd" class="form-control" placeholder="Senha">
+            <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
+            <button class="btn-secondary" onclick="criarAcesso()">Criar Acesso</button>
+            <span class="auth-link" onclick="recuperarSenha()">Esqueci minha senha</span>
+        </div>
+    </div>
+
+    <div id="app-view">
+        <div class="app-header">
+            <div><h3 style="font-size: 1.1rem; color:white;">Portaria</h3><span style="font-size: 0.8rem; color:#94a3b8;" id="porteiro-name-display">Carregando...</span></div>
+            <div class="avatar" id="avatar-icon">P</div>
+            <button style="background:none; border:none; color:white; font-size:1.5rem;" onclick="fazerLogout()"><i class="ph ph-sign-out"></i></button>
+        </div>
+
+        <div class="app-content" id="porteiro-list-view">
+            <h4 style="font-size: 0.8rem; color:#64748b; text-transform:uppercase; font-weight:600;">Entregas na Portaria</h4>
+            <div id="porteiro-packages-list" style="display:flex; flex-direction:column; gap:12px;"></div>
+            <hr style="border:none; margin: 8px 0;">
+            <div class="history-toggle" onclick="toggleHistory(this)">
+                <span>Mostrar Histórico</span> <i class="ph ph-caret-down"></i>
+            </div>
+            <div id="porteiro-packages-history" style="margin-top: 12px; display:none; flex-direction:column; gap:12px;"></div>
+        </div>
+
+        <div class="app-content" id="porteiro-form-view" style="display:none; background:#fff;">
+            <h3 style="margin-bottom:16px;">Nova Encomenda</h3>
+            <div style="display:flex; gap:10px;"><div class="form-group"><label>Bloco</label><input type="text" id="mob-bloco" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="mob-apt" class="form-control"></div></div>
+            <div class="form-group"><label>Remetente *</label>
+                <input type="text" id="mob-remetente" class="form-control">
+                <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Mercado Livre'">M. Livre</span>
+                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Shein'">Shein</span>
+                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Shopee'">Shopee</span>
+                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Correios'">Correios</span>
+                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Mercado'">Mercado</span>
+                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Outros'">Outros</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Foto do Pacote</label>
+                <input type="file" accept="image/*" capture="environment" id="mob-camera-input" style="display:none;" onchange="handleRealCamera(event)">
+                <div class="app-photo-ph" id="mob-photo-trigger" onclick="document.getElementById('mob-camera-input').click()"><i class="ph ph-camera" style="font-size:2rem; color:#94a3b8;"></i><span style="font-size:0.75rem; color:#94a3b8; margin-top:8px;">Tirar Foto</span></div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-primary" style="background:#f1f5f9; color:#0f172a;" onclick="switchTab('list', document.getElementById('nav-list'))">Cancelar</button><button class="btn-primary" onclick="handleMobileReceive()">Salvar</button></div>
+        </div>
+
+        <div class="app-content" id="porteiro-profile-view" style="display:none; background:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h4 style="font-size: 0.8rem; color:#64748b; text-transform:uppercase; font-weight:600;">O Meu Perfil</h4>
+                <button class="btn-primary" style="width:auto; padding:6px 12px; font-size:0.8rem;" onclick="salvarPerfil()"><i class="ph ph-floppy-disk"></i> Salvar</button>
+            </div>
+            <div style="text-align:center; margin-bottom: 24px;">
+                <input type="file" id="foto-perfil" accept="image/*" style="display:none;" onchange="previewFotoPerfil(event)">
+                <div class="avatar" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 10px;" id="profile-pic-container">P</div>
+                <button class="btn-primary" style="background:#f1f5f9; color:#0f172a; width:auto; display:inline-flex; padding:8px 16px;" onclick="document.getElementById('foto-perfil').click()"><i class="ph ph-camera"></i> Alterar Foto</button>
+            </div>
+            <div class="form-group"><label>Nome de Apresentação</label><input type="text" id="prof-nome" class="form-control"></div>
+        </div>
+
+        <button class="fab-button" id="porteiro-fab" onclick="switchTab('form', null)"><i class="ph ph-plus"></i></button>
+        <div class="app-bottom-nav">
+            <button class="app-nav-item active" id="nav-list" onclick="switchTab('list', this)"><i class="ph ph-list-checks"></i> Fila</button>
+            <button class="app-nav-item" onclick="document.getElementById('releaseModal').classList.add('active')"><i class="ph ph-key"></i> Baixa</button>
+            <button class="app-nav-item" onclick="switchTab('profile', this)"><i class="ph ph-user"></i> Perfil</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="releaseModal"><div class="modal-card"><h2 style="font-size:1.1rem; margin-bottom:10px;">Baixa de Encomenda</h2><input type="text" id="release-code-input" placeholder="SAI-XXXXXX" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:var(--radius); margin-bottom:20px; text-align:center; font-size:1.1rem; font-weight:bold; text-transform:uppercase;"><div style="display:flex; gap:10px;"><button class="btn-primary" style="background:#f1f5f9; color:#0f172a;" onclick="document.getElementById('releaseModal').classList.remove('active')">Cancelar</button><button class="btn-primary" style="background:var(--success);" onclick="confirmRelease()">LIBERAR</button></div></div></div>
+    <div class="toast" id="toastNotification"><i class="ph ph-check-circle" style="font-size: 1.4rem; color: #4ade80;"></i><span id="toast-message"></span></div>
+
+    <script> if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js'); </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, where, getDocs, updateDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyA-NsOSEHJC8MPXEhAzbsVcDj2Z9lkQkFs", authDomain: "hey-chegoou.firebaseapp.com", projectId: "hey-chegoou" };
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+        
+        let usuarioAtual = null; let mobPhotoBase64 = ""; let perfilFotoBase64 = "";
+        window.showToast = (msg) => { const t = document.getElementById("toastNotification"); document.getElementById("toast-message").innerText = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 3000); };
+
+        window.toggleHistory = (el) => {
+            const hist = document.getElementById('porteiro-packages-history');
+            if(hist.style.display === 'none') { hist.style.display = 'flex'; el.classList.add('open'); }
+            else { hist.style.display = 'none'; el.classList.remove('open'); }
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                usuarioAtual = user; document.getElementById('auth-view').classList.remove('active-system-view'); document.getElementById('app-view').classList.add('active-system-view');
+                await carregarPerfil(user.uid, user.email); iniciarEscutaFila();
+            } else { document.getElementById('app-view').classList.remove('active-system-view'); document.getElementById('auth-view').classList.add('active-system-view'); }
+        });
+
+        // SINCRONIZAR CRIAÇÃO DE CONTA COM ADMIN
+        window.criarAcesso = () => {
+            const email = document.getElementById('login-email').value; const pwd = document.getElementById('login-pwd').value;
+            if(!email || !pwd) return alert("Preencha e-mail e senha!");
+            createUserWithEmailAndPassword(auth, email, pwd).then(async (cred) => {
+                await setDoc(doc(db, "porteiros", cred.user.uid), { email: email, nome: email.split('@')[0] });
+                showToast("Acesso Criado com Sucesso!");
+            }).catch(e => alert(e.message));
+        };
+
+        window.fazerLogin = () => signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pwd').value).catch(e => alert("Erro ao entrar!"));
+        window.fazerLogout = () => signOut(auth);
+        window.recuperarSenha = () => { const email = document.getElementById('login-email').value; if(!email) return alert("Preencha o e-mail"); sendPasswordResetEmail(auth, email).then(()=>showToast("E-mail enviado!")).catch(e => alert(e.message)); };
+
+        window.switchTab = (view, el) => {
+            document.getElementById('porteiro-list-view').style.display = 'none'; document.getElementById('porteiro-form-view').style.display = 'none'; document.getElementById('porteiro-profile-view').style.display = 'none';
+            document.querySelectorAll('.app-nav-item').forEach(e => e.classList.remove('active')); if(el) el.classList.add('active');
+            if(view === 'list') { document.getElementById('porteiro-list-view').style.display = 'flex'; document.getElementById('porteiro-fab').style.display = 'flex'; }
+            else if(view === 'form') { document.getElementById('porteiro-form-view').style.display = 'flex'; document.getElementById('porteiro-fab').style.display = 'none'; mobPhotoBase64 = ""; document.getElementById('mob-photo-trigger').innerHTML = `<i class="ph ph-camera" style="font-size:2rem; color:#94a3b8;"></i>`; }
+            else if(view === 'profile') { document.getElementById('porteiro-profile-view').style.display = 'flex'; document.getElementById('porteiro-fab').style.display = 'none'; }
+        };
+
+        // PERFIL LÓGICA
+        async function carregarPerfil(uid, email) {
+            const snap = await getDoc(doc(db, "porteiros", uid));
+            if(snap.exists()) {
+                const d = snap.data(); document.getElementById('porteiro-name-display').innerText = d.nome || email.split('@')[0]; document.getElementById('prof-nome').value = d.nome || "";
+                if(d.foto) { perfilFotoBase64 = d.foto; const img = `<img src="${d.foto}" style="width:100%; height:100%; object-fit:cover;">`; document.getElementById('avatar-icon').innerHTML = img; document.getElementById('profile-pic-container').innerHTML = img; }
+            } else { document.getElementById('porteiro-name-display').innerText = email.split('@')[0]; }
+        }
+        window.previewFotoPerfil = (e) => { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onloadend = () => { perfilFotoBase64 = reader.result; document.getElementById('profile-pic-container').innerHTML = `<img src="${perfilFotoBase64}" style="width:100%; height:100%; object-fit:cover;">`; }; reader.readAsDataURL(file); };
+        window.salvarPerfil = async () => { const n = document.getElementById('prof-nome').value; await setDoc(doc(db, "porteiros", usuarioAtual.uid), { nome: n, foto: perfilFotoBase64, email: usuarioAtual.email }, {merge: true}); document.getElementById('porteiro-name-display').innerText = n; if(perfilFotoBase64) document.getElementById('avatar-icon').innerHTML = `<img src="${perfilFotoBase64}" style="width:100%; height:100%; object-fit:cover;">`; showToast("Perfil Salvo!"); };
+
+        // CÂMERA LÓGICA
+        window.handleRealCamera = (e) => { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (ev) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); const MAX_WIDTH = 600; const scaleSize = MAX_WIDTH / img.width; canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height); mobPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7); document.getElementById('mob-photo-trigger').innerHTML = `<img src="${mobPhotoBase64}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`; }; img.src = ev.target.result; }; reader.readAsDataURL(file); };
+
+        window.handleMobileReceive = async () => {
+            const b = document.getElementById('mob-bloco').value; const a = document.getElementById('mob-apt').value; const r = document.getElementById('mob-remetente').value;
+            if(!a || !r) return showToast("Apt e Remetente!");
+            const agora = new Date(); const dataISO = `${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,'0')}-${String(agora.getDate()).padStart(2,'0')}`;
+            const payload = { idInterno: `ENT-${Math.floor(100000 + Math.random()*900000)}`, codigoSeguranca: `SAI-${Math.floor(100000 + Math.random()*900000)}`, bloco: b, apt: a, remetente: r, dataEntrada: `${String(agora.getDate()).padStart(2,'0')}/${String(agora.getMonth()+1).padStart(2,'0')} ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`, dataEntradaISO: dataISO, timestamp: agora.getTime(), status: "Aguardando retirada", porteiro: document.getElementById('porteiro-name-display').innerText };
+            if(mobPhotoBase64) payload.fotoObjeto = mobPhotoBase64; // SALVAR FOTO
+            await addDoc(collection(db, "encomendas"), payload);
+            document.getElementById('mob-apt').value = ''; document.getElementById('mob-remetente').value = ''; switchTab('list', document.getElementById('nav-list')); showToast("Registado!");
+        };
+
+        function iniciarEscutaFila() {
+            onSnapshot(query(collection(db, "encomendas"), orderBy("timestamp", "desc"), limit(40)), (snap) => {
+                const pendentes = document.getElementById('porteiro-packages-list'); const historico = document.getElementById('porteiro-packages-history');
+                pendentes.innerHTML = ""; historico.innerHTML = "";
+                snap.forEach(doc => {
+                    const p = doc.data(); const isPendente = p.status === 'Aguardando retirada';
+                    const fotoHtml = p.fotoObjeto ? `<i class="ph ph-image" style="color:var(--primary); margin-left:6px;" title="Tem Foto"></i>` : '';
+                    const cardHTML = `<div class="app-card" style="padding:12px;"><div style="display:flex; justify-content:space-between;"><strong style="color:#0f172a;">${p.bloco ? p.bloco+' - ' : ''}Apt ${p.apt} ${fotoHtml}</strong><span class="badge ${isPendente ? 'badge-pending' : 'badge-completed'}">${p.idInterno}</span></div><div style="font-size:0.8rem; color:var(--text-muted); margin-top:6px;">${p.remetente} | ${p.dataEntrada}</div></div>`;
+                    if(isPendente) pendentes.innerHTML += cardHTML; else historico.innerHTML += cardHTML;
+                });
+            });
+        }
+
+        window.confirmRelease = async () => {
+            const cod = document.getElementById('release-code-input').value.toUpperCase(); const snap = await getDocs(query(collection(db, "encomendas"), where("codigoSeguranca", "==", cod)));
+            if(snap.empty) return alert("Código inválido!");
+            const agora = new Date(); const dFormat = `${String(agora.getDate()).padStart(2,'0')}/${String(agora.getMonth()+1).padStart(2,'0')} às ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`;
+            snap.forEach(async (d) => { await updateDoc(doc(db, "encomendas", d.id), { status: "Retirada", dataRetirada: dFormat, timestampRetirada: agora.getTime() }); });
+            showToast("Baixa confirmada!"); document.getElementById('releaseModal').classList.remove('active'); document.getElementById('release-code-input').value = '';
+        };
+    </script>
+</body>
+</html>
