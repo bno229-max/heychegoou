@@ -164,12 +164,16 @@
         async function inicializarTokenFCM(uid) {
             if ('serviceWorker' in navigator) {
                 try {
-                    const registration = await navigator.serviceWorker.register('sw.js', { scope: './' });
-                    console.log('Service Worker Registado para Push');
-                    
-                    const token = await getToken(messaging, { 
-                        serviceWorkerRegistration: registration,
-                        vapidKey: "BIncWFNP6Sr9ZgURiYR6n-J_ut_ZzORyPqGFOpLTwINzDw5IpRLca-KPAyLl2TcEPaVq_NVoIBt9FgwzHDNn0Sg" 
+                    // Registra o SW de cache (offline)
+                    await navigator.serviceWorker.register('sw.js', { scope: './' });
+
+                    // Registra o SW específico do Firebase para notificações em BACKGROUND
+                    const fcmRegistration = await navigator.serviceWorker.register('firebase-messaging-sw.js', { scope: './' });
+                    console.log('Service Worker FCM Registado para Push');
+
+                    const token = await getToken(messaging, {
+                        serviceWorkerRegistration: fcmRegistration,
+                        vapidKey: "BIncWFNP6Sr9ZgURiYR6n-J_ut_ZzORyPqGFOpLTwINzDw5IpRLca-KPAyLl2TcEPaVq_NVoIBt9FgwzHDNn0Sg"
                     });
 
                     if (token) {

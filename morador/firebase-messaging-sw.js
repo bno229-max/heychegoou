@@ -13,11 +13,29 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Mensagem recebida em background ', payload);
-  const notificationTitle = payload.notification.title;
+
+  const notificationTitle = (payload.notification && payload.notification.title) || 'Hey Chegoou';
   const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/icon-192.png'
+    body: (payload.notification && payload.notification.body) || '',
+    icon: '/morador/icon-192.png?v=2',
+    badge: '/morador/icon-192.png?v=2',
+    data: payload.data || {}
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Ao tocar na notificação, foca/abre o app do morador
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes('/morador/') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) return clients.openWindow('/morador/');
+    })
+  );
 });
