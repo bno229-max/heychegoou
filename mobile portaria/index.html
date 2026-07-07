@@ -4,63 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="manifest.json">
-    <!-- Forçar ícone original arredondado no iOS e Android -->
-    <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="theme-color" content="#1e293b">
+    <!-- Forçar ícone original arredondado -->
+    <link rel="icon" type="image/png" href="icon-192.png?v=2">
+    <link rel="apple-touch-icon" href="icon-192.png?v=2">
+    <meta name="theme-color" content="#0284c7">
     <title>Hey Chegoou | Portaria</title>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-sidebar: #1e293b; --primary: #0284c7; --success: #16a34a; --text-main: #334155; --text-muted: #64748b; --border-color: #e2e8f0; --radius: 6px; }
+        :root { --bg-app: #f8fafc; --primary: #0284c7; --success: #16a34a; --text-muted: #64748b; --border-color: #e2e8f0; --radius: 6px; --danger: #ef4444; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #f8fafc; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        body { background: var(--bg-app); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         .active-system-view { display: flex !important; }
-        #auth-view, #app-view { display: none; width: 100%; height: 100%; flex-direction: column; background: #fff; }
-        
+        #auth-view, #app-view { display: none; width: 100%; height: 100%; flex-direction: column; }
+
         #auth-view { background: #0f172a; align-items: center; justify-content: center; padding: 24px; text-align: center;}
         .form-control { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #cbd5e1; border-radius: var(--radius); outline: none; }
-        .btn-primary { background: var(--primary); color: #fff; border: none; padding: 12px 20px; border-radius: var(--radius); font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content:center; gap: 8px; width: 100%; }
+        .btn-primary { background: var(--primary); color: #fff; border: none; padding: 12px 20px; border-radius: var(--radius); font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content:center; width: 100%; }
         .btn-secondary { background: transparent; color: #fff; border: 1px solid #cbd5e1; padding: 12px 20px; border-radius: var(--radius); font-weight: 600; cursor: pointer; width: 100%; margin-top:10px;}
-        .auth-link { color: var(--primary); font-size: 0.85rem; font-weight: 500; cursor: pointer; display:block; margin-top: 16px; }
+        .auth-link { color: var(--primary); font-size: 0.85rem; font-weight: 500; cursor: pointer; display:block; margin-top: 16px; text-decoration:none; }
 
-        .app-header { background: var(--bg-sidebar); color: white; padding: 20px 20px 16px; display: flex; justify-content: space-between; align-items: center; }
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; overflow:hidden; }
+        .app-header { background: #fff; padding: 20px 20px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; font-size: 14px; overflow: hidden; cursor:pointer;}
 
-        .app-content { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 110px; display: flex; flex-direction: column; gap: 16px; background:#f8fafc;}
+        .app-content { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 110px; display: flex; flex-direction: column; gap: 16px; }
         .app-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border: 1px solid var(--border-color); }
-        .badge { padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; cursor: pointer; border: 1px solid #cbd5e1;}
-        .badge-pending { background: #f0f9ff; color: #0284c7; border:none;} .badge-completed { background: #dcfce7; color: #16a34a; border:none; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        .badge-pending { background: #f0f9ff; color: var(--primary); } .badge-completed { background: #dcfce7; color: var(--success); }
+        .app-photo-ph { width: 100%; height: 140px; background: #f8fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px dashed #cbd5e1; margin-bottom: 12px; overflow: hidden;}
         
-        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; flex: 1; }
-        .form-group label { font-size: 0.8rem; font-weight: 600; color: #475569; text-transform: uppercase;}
-        
-        .app-photo-ph { width: 100%; height: 160px; background: #f1f5f9; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; border: 1px dashed #cbd5e1; cursor:pointer; overflow: hidden;}
-        
-        .app-bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-radius: 24px 24px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); padding: 14px 20px calc(14px + env(safe-area-inset-bottom)); display: flex; justify-content: space-around; z-index: 100; overflow: hidden;}
+        .app-bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-radius: 24px 24px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); padding: 14px 20px calc(14px + env(safe-area-inset-bottom)); display: flex; justify-content: space-around; z-index: 100; border-top:1px solid rgba(0,0,0,0.03); overflow: hidden;}
         .app-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 0.7rem; font-weight: 600; cursor: pointer; background: none; border: none; }
         .app-nav-item.active { color: var(--primary); }
         .app-nav-item i { font-size: 1.5rem; }
-        
-        .fab-button { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: 64px; height: 64px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); border: none; cursor: pointer; z-index: 50; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.2s; }
+        .push-alert { position: absolute; top: -100px; left: 16px; right: 16px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); display: flex; gap: 12px; transition: 0.4s; z-index: 100; border: 1px solid rgba(0,0,0,0.05); }
+        .push-alert.show { top: 16px; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); display: flex; align-items: flex-end; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
-        .modal-card { width: 90%; max-width: 400px; background: #fff; border-radius: var(--radius); padding: 24px; text-align: center; }
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #0f172a; color: #fff; padding: 14px 24px; border-radius: var(--radius); font-weight: 500; display: flex; align-items: center; gap: 12px; opacity: 0; transition: 0.3s; z-index: 2000; }
+        .modal-card { width: 100%; background: #fff; border-radius: 20px 20px 0 0; padding: 24px; max-height: 80vh; overflow-y: auto; transform: translateY(100%); transition: 0.3s; padding-bottom: calc(24px + env(safe-area-inset-bottom));}
+        .modal-overlay.active .modal-card { transform: translateY(0); }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #0f172a; color: #fff; padding: 14px 24px; border-radius: var(--radius); font-weight: 500; display: flex; align-items: center; gap: 12px; opacity: 0; transition: 0.3s; z-index: 3000;}
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
         .history-toggle { background: #fff; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; color: #475569; font-weight: 600; font-size: 0.85rem; cursor: pointer; text-transform: uppercase; }
         .history-toggle i { transition: transform 0.3s; }
         .history-toggle.open i { transform: rotate(180deg); }
+
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .badge-pulse { 
+            animation: pulse-red 2s infinite; 
+            background: var(--danger); 
+            color: #fff; 
+            font-size: 0.6rem; 
+            padding: 2px 6px; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            border: 2px solid #fff;
+        }
     </style>
 </head>
 <body>
 
+    <div id="morador-push" class="push-alert">
+        <div style="background: var(--primary); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff;"><i class="ph ph-bell-ringing"></i></div>
+        <div style="flex:1;"><strong style="display:block; font-size:0.9rem; color:#0f172a;">Aviso da Portaria</strong><span id="morador-push-text" style="font-size:0.8rem; color:#475569;"></span></div>
+    </div>
+    
     <div id="auth-view" class="active-system-view">
         <div style="width:100%; max-width:350px;">
-            <div style="font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 24px;"><i class="ph ph-buildings" style="color:var(--primary);"></i> Hey Chegoou</div>
-            <input type="email" id="login-email" class="form-control" placeholder="E-mail da Portaria">
+            <div style="font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 24px; text-align:center;"><i class="ph ph-buildings" style="color:var(--primary);"></i> Hey Chegoou</div>
+            <input type="email" id="login-email" class="form-control" placeholder="E-mail do Morador">
             <input type="password" id="login-pwd" class="form-control" placeholder="Senha">
             <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
             <button class="btn-secondary" onclick="criarAcesso()">Criar Acesso</button>
@@ -70,89 +88,108 @@
 
     <div id="app-view">
         <div class="app-header">
-            <div><h3 style="font-size: 1.1rem; color:white;">Portaria</h3><span style="font-size: 0.8rem; color:#94a3b8;" id="porteiro-name-display">Carregando...</span></div>
-            <div class="avatar" id="avatar-icon">P</div>
-            <button style="background:none; border:none; color:white; font-size:1.5rem;" onclick="fazerLogout()"><i class="ph ph-sign-out"></i></button>
-        </div>
-
-        <div class="app-content" id="porteiro-list-view">
-            <h4 style="font-size: 0.8rem; color:#64748b; text-transform:uppercase; font-weight:600;">Entregas na Portaria</h4>
-            <div id="porteiro-packages-list" style="display:flex; flex-direction:column; gap:12px;"></div>
-            <hr style="border:none; margin: 8px 0;">
-            <div class="history-toggle" onclick="toggleHistory(this)">
-                <span>Mostrar Histórico</span> <i class="ph ph-caret-down"></i>
-            </div>
-            <div id="porteiro-packages-history" style="margin-top: 12px; display:none; flex-direction:column; gap:12px;"></div>
-        </div>
-
-        <div class="app-content" id="porteiro-form-view" style="display:none; background:#fff;">
-            <h3 style="margin-bottom:16px;">Nova Encomenda</h3>
-            <div style="display:flex; gap:10px;"><div class="form-group"><label>Bloco</label><input type="text" id="mob-bloco" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="mob-apt" class="form-control"></div></div>
-            <div class="form-group"><label>Remetente *</label>
-                <input type="text" id="mob-remetente" class="form-control">
-                <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
-                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Mercado Livre'">M. Livre</span>
-                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Shein'">Shein</span>
-                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Shopee'">Shopee</span>
-                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Correios'">Correios</span>
-                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Mercado'">Mercado</span>
-                    <span class="badge" onclick="document.getElementById('mob-remetente').value='Outros'">Outros</span>
+            <div><h3 style="font-size: 1.1rem; color:#0f172a;" id="morador-header-name">Olá, Morador</h3><span style="font-size: 0.8rem; color:#64748b;" id="morador-header-local">Carregando...</span></div>
+            <div style="display:flex; gap:16px; align-items:center;">
+                <div style="position:relative; cursor:pointer;" onclick="document.getElementById('notifModal').classList.add('active')">
+                    <i class="ph ph-bell" style="font-size:1.6rem; color:#0f172a;"></i>
+                    <span id="unread-count" style="display:none; position:absolute; top:-4px; right:-6px;">0</span>
                 </div>
+                <div class="avatar" id="morador-header-avatar" onclick="switchAppTab('profile', document.querySelectorAll('.app-nav-item')[1])">M</div>
             </div>
-            <div class="form-group">
-                <label>Foto do Pacote</label>
-                <input type="file" accept="image/*" capture="environment" id="mob-camera-input" style="display:none;" onchange="handleRealCamera(event)">
-                <div class="app-photo-ph" id="mob-photo-trigger" onclick="document.getElementById('mob-camera-input').click()"><i class="ph ph-camera" style="font-size:2rem; color:#94a3b8;"></i><span style="font-size:0.75rem; color:#94a3b8; margin-top:8px;">Tirar Foto</span></div>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-primary" style="background:#f1f5f9; color:#0f172a;" onclick="switchTab('list', document.getElementById('nav-list'))">Cancelar</button><button class="btn-primary" onclick="handleMobileReceive()">Salvar</button></div>
         </div>
 
-        <div class="app-content" id="porteiro-profile-view" style="display:none; background:#fff;">
+        <div class="app-content" id="app-tab-home">
+            <h4 style="font-size: 0.8rem; color:#64748b; text-transform:uppercase; font-weight:600;">Para Retirar na Portaria</h4>
+            <div id="morador-packages-pending" style="display:flex; flex-direction:column; gap:12px;"></div>
+            
+            <hr style="border:none; margin: 8px 0;">
+
+            <div class="history-toggle" onclick="toggleHistory(this)">
+                <span>Minhas Retiradas Antigas</span> <i class="ph ph-caret-down"></i>
+            </div>
+            <div id="morador-packages-history" style="margin-top: 12px; display:none; flex-direction:column; gap:12px;"></div>
+        </div>
+
+        <div class="app-content" id="app-tab-profile" style="display:none; background:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h4 style="font-size: 0.8rem; color:#64748b; text-transform:uppercase; font-weight:600;">O Meu Perfil</h4>
                 <button class="btn-primary" style="width:auto; padding:6px 12px; font-size:0.8rem;" onclick="salvarPerfil()"><i class="ph ph-floppy-disk"></i> Salvar</button>
             </div>
+            
             <div style="text-align:center; margin-bottom: 24px;">
                 <input type="file" id="foto-perfil" accept="image/*" style="display:none;" onchange="previewFotoPerfil(event)">
-                <div class="avatar" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 10px;" id="profile-pic-container">P</div>
+                <div class="avatar" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 10px;" id="profile-pic-container">M</div>
                 <button class="btn-primary" style="background:#f1f5f9; color:#0f172a; width:auto; display:inline-flex; padding:8px 16px;" onclick="document.getElementById('foto-perfil').click()"><i class="ph ph-camera"></i> Alterar Foto</button>
             </div>
-            <div class="form-group"><label>Nome de Apresentação</label><input type="text" id="prof-nome" class="form-control"></div>
+
+            <div class="form-group"><label>Nome</label><input type="text" id="prof-nome" class="form-control"></div>
+            <div style="display:flex; gap:10px;"><div class="form-group"><label>Bloco</label><input type="text" id="prof-bloco" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="prof-apt" class="form-control"></div></div>
+            <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:10px; padding:10px; background:#f1f5f9; border-radius:6px;">O número do Apartamento é essencial para associar as tuas encomendas automaticamente.</p>
+            <button class="btn-primary" style="background:transparent; color:var(--danger); border:1px solid var(--danger); margin-top:20px;" onclick="fazerLogout()"><i class="ph ph-sign-out"></i> Sair do Aplicativo</button>
         </div>
 
-        <button class="fab-button" id="porteiro-fab" onclick="switchTab('form', null)"><i class="ph ph-plus"></i></button>
         <div class="app-bottom-nav">
-            <button class="app-nav-item active" id="nav-list" onclick="switchTab('list', this)"><i class="ph ph-list-checks"></i> Fila</button>
-            <button class="app-nav-item" onclick="document.getElementById('releaseModal').classList.add('active')"><i class="ph ph-key"></i> Baixa</button>
-            <button class="app-nav-item" onclick="switchTab('profile', this)"><i class="ph ph-user"></i> Perfil</button>
+            <button class="app-nav-item active" onclick="switchAppTab('home', this)"><i class="ph ph-package"></i> Pacotes</button>
+            <button class="app-nav-item" onclick="switchAppTab('profile', this)"><i class="ph ph-user"></i> Perfil</button>
         </div>
     </div>
 
-    <div class="modal-overlay" id="releaseModal"><div class="modal-card"><h2 style="font-size:1.1rem; margin-bottom:10px;">Baixa de Encomenda</h2><input type="text" id="release-code-input" placeholder="SAI-XXXXXX" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:var(--radius); margin-bottom:20px; text-align:center; font-size:1.1rem; font-weight:bold; text-transform:uppercase;"><div style="display:flex; gap:10px;"><button class="btn-primary" style="background:#f1f5f9; color:#0f172a;" onclick="document.getElementById('releaseModal').classList.remove('active')">Cancelar</button><button class="btn-primary" style="background:var(--success);" onclick="confirmRelease()">LIBERAR</button></div></div></div>
+    <div class="modal-overlay" id="notifModal">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="font-size:1.1rem; color:#0f172a;">Caixa de Mensagens</h3>
+                <button style="background:#f1f5f9; border:none; padding:8px; border-radius:50%;" onclick="document.getElementById('notifModal').classList.remove('active')"><i class="ph ph-x"></i></button>
+            </div>
+            <div id="notif-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+        </div>
+    </div>
+
     <div class="toast" id="toastNotification"><i class="ph ph-check-circle" style="font-size: 1.4rem; color: #4ade80;"></i><span id="toast-message"></span></div>
 
-    <script> if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js'); </script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, where, getDocs, updateDoc, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyA-NsOSEHJC8MPXEhAzbsVcDj2Z9lkQkFs", authDomain: "hey-chegoou.firebaseapp.com", projectId: "hey-chegoou" };
-        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+        const firebaseConfig = { apiKey: "AIzaSyA-NsOSEHJC8MPXEhAzbsVcDj2Z9lkQkFs", authDomain: "hey-chegoou.firebaseapp.com", projectId: "hey-chegoou", messagingSenderId: "481787472500", appId: "1:481787472500:web:16955771ee845086173f21" };
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const messaging = getMessaging(app);
         
-        let usuarioAtual = null; let mobPhotoBase64 = ""; let perfilFotoBase64 = "";
-        window.showToast = (msg) => { const t = document.getElementById("toastNotification"); document.getElementById("toast-message").innerText = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 3000); };
+        let usuarioAtual = null; let aptAtualString = ""; let primeiraCargaEnc = true; let primeiraCargaNotif = true; let fotoPerfilBase64 = "";
 
-        window.toggleHistory = (el) => {
-            const hist = document.getElementById('porteiro-packages-history');
-            if(hist.style.display === 'none') { hist.style.display = 'flex'; el.classList.add('open'); }
-            else { hist.style.display = 'none'; el.classList.remove('open'); }
-        };
+        window.showToast = (msg) => { const t = document.getElementById("toastNotification"); document.getElementById("toast-message").innerText = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 3000); };
+        window.switchAppTab = (tabId, el) => { document.querySelectorAll('.app-content').forEach(c => c.style.display = 'none'); document.querySelectorAll('.app-nav-item').forEach(b => b.classList.remove('active')); document.getElementById(`app-tab-${tabId}`).style.display = 'flex'; el.classList.add('active'); };
+        window.toggleHistory = (el) => { const hist = document.getElementById('morador-packages-history'); if(hist.style.display === 'none') { hist.style.display = 'flex'; el.classList.add('open'); } else { hist.style.display = 'none'; el.classList.remove('open'); } };
+
+        async function inicializarTokenFCM(uid) {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('sw.js', { scope: './' });
+                    console.log('Service Worker Registado para Push');
+                    
+                    const token = await getToken(messaging, { 
+                        serviceWorkerRegistration: registration,
+                        vapidKey: "BIncWFNP6Sr9ZgURiYR6n-J_ut_ZzORyPqGFOpLTwINzDw5IpRLca-KPAyLl2TcEPaVq_NVoIBt9FgwzHDNn0Sg" 
+                    });
+
+                    if (token) {
+                        await updateDoc(doc(db, "moradores", uid), { tokenFCM: token });
+                    }
+                } catch (error) {
+                    console.error("Erro na arquitetura de Token FCM:", error);
+                }
+            }
+        }
+
+        onMessage(messaging, (payload) => {
+            triggerPushAlert(payload.notification.title, payload.notification.body);
+        });
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 usuarioAtual = user; document.getElementById('auth-view').classList.remove('active-system-view'); document.getElementById('app-view').classList.add('active-system-view');
-                await carregarPerfil(user.uid, user.email); iniciarEscutaFila();
+                await carregarDadosPerfil(user.uid, user.email);
+                await inicializarTokenFCM(user.uid);
             } else { document.getElementById('app-view').classList.remove('active-system-view'); document.getElementById('auth-view').classList.add('active-system-view'); }
         });
 
@@ -160,70 +197,106 @@
             const email = document.getElementById('login-email').value; const pwd = document.getElementById('login-pwd').value;
             if(!email || !pwd) return alert("Preencha e-mail e senha!");
             createUserWithEmailAndPassword(auth, email, pwd).then(async (cred) => {
-                await setDoc(doc(db, "porteiros", cred.user.uid), { email: email, nome: email.split('@')[0] });
-                showToast("Acesso Criado com Sucesso!");
+                await setDoc(doc(db, "moradores", cred.user.uid), { email: email, nome: email.split('@')[0], apt: "", bloco: "" });
+                showToast("Acesso Criado! Preencha seu perfil.");
             }).catch(e => alert(e.message));
         };
 
-        window.fazerLogin = () => signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pwd').value).catch(e => alert("Erro ao entrar!"));
+        window.fazerLogin = () => signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pwd').value).catch(e => alert(e.message));
         window.fazerLogout = () => signOut(auth);
-        window.recuperarSenha = () => { const email = document.getElementById('login-email').value; if(!email) return alert("Preencha o e-mail"); sendPasswordResetEmail(auth, email).then(()=>showToast("E-mail enviado!")).catch(e => alert(e.message)); };
+        window.recuperarSenha = () => { const email = document.getElementById('login-email').value; if(!email) return alert("Preencha o campo de e-mail primeiro!"); sendPasswordResetEmail(auth, email).then(()=>showToast("E-mail enviado!")).catch(e => alert(e.message)); };
 
-        window.switchTab = (view, el) => {
-            document.getElementById('porteiro-list-view').style.display = 'none'; document.getElementById('porteiro-form-view').style.display = 'none'; document.getElementById('porteiro-profile-view').style.display = 'none';
-            document.querySelectorAll('.app-nav-item').forEach(e => e.classList.remove('active')); if(el) el.classList.add('active');
-            if(view === 'list') { document.getElementById('porteiro-list-view').style.display = 'flex'; document.getElementById('porteiro-fab').style.display = 'flex'; }
-            else if(view === 'form') { document.getElementById('porteiro-form-view').style.display = 'flex'; document.getElementById('porteiro-fab').style.display = 'none'; mobPhotoBase64 = ""; document.getElementById('mob-photo-trigger').innerHTML = `<i class="ph ph-camera" style="font-size:2rem; color:#94a3b8;"></i>`; }
-            else if(view === 'profile') { document.getElementById('porteiro-profile-view').style.display = 'flex'; document.getElementById('porteiro-fab').style.display = 'none'; }
-        };
-
-        async function carregarPerfil(uid, email) {
-            const snap = await getDoc(doc(db, "porteiros", uid));
-            if(snap.exists()) {
-                const d = snap.data(); document.getElementById('porteiro-name-display').innerText = d.nome || email.split('@')[0]; document.getElementById('prof-nome').value = d.nome || "";
-                if(d.foto) { perfilFotoBase64 = d.foto; const img = `<img src="${d.foto}" style="width:100%; height:100%; object-fit:cover;">`; document.getElementById('avatar-icon').innerHTML = img; document.getElementById('profile-pic-container').innerHTML = img; }
-            } else { document.getElementById('porteiro-name-display').innerText = email.split('@')[0]; }
+        async function carregarDadosPerfil(uid, email) {
+            const docSnap = await getDoc(doc(db, "moradores", uid));
+            if (docSnap.exists()) {
+                const d = docSnap.data(); document.getElementById('prof-nome').value = d.nome || ""; document.getElementById('prof-bloco').value = d.bloco || ""; document.getElementById('prof-apt').value = d.apt || "";
+                aptAtualString = String(d.apt || "").trim();
+                document.getElementById('morador-header-name').innerText = `Olá, ${d.nome ? d.nome.split(' ')[0] : 'Morador'}`;
+                document.getElementById('morador-header-local').innerText = aptAtualString ? (d.bloco ? `${d.bloco} - Apt ${aptAtualString}` : `Apt ${aptAtualString}`) : "Falta preencher Perfil";
+                
+                if(d.foto) { fotoPerfilBase64 = d.foto; const img = `<img src="${d.foto}" style="width:100%; height:100%; object-fit:cover;">`; document.getElementById('profile-pic-container').innerHTML = img; document.getElementById('morador-header-avatar').innerHTML = img; }
+                if(aptAtualString) { iniciarEscutaEncomendas(); iniciarEscutaNotificacoes(); }
+            }
         }
-        window.previewFotoPerfil = (e) => { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onloadend = () => { perfilFotoBase64 = reader.result; document.getElementById('profile-pic-container').innerHTML = `<img src="${perfilFotoBase64}" style="width:100%; height:100%; object-fit:cover;">`; }; reader.readAsDataURL(file); };
-        window.salvarPerfil = async () => { const n = document.getElementById('prof-nome').value; await setDoc(doc(db, "porteiros", usuarioAtual.uid), { nome: n, foto: perfilFotoBase64, email: usuarioAtual.email }, {merge: true}); document.getElementById('porteiro-name-display').innerText = n; if(perfilFotoBase64) document.getElementById('avatar-icon').innerHTML = `<img src="${perfilFotoBase64}" style="width:100%; height:100%; object-fit:cover;">`; showToast("Perfil Salvo!"); };
 
-        window.handleRealCamera = (e) => { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (ev) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); const MAX_WIDTH = 600; const scaleSize = MAX_WIDTH / img.width; canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height); mobPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7); document.getElementById('mob-photo-trigger').innerHTML = `<img src="${mobPhotoBase64}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`; }; img.src = ev.target.result; }; reader.readAsDataURL(file); };
+        window.previewFotoPerfil = (e) => { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onloadend = () => { fotoPerfilBase64 = reader.result; document.getElementById('profile-pic-container').innerHTML = `<img src="${fotoPerfilBase64}" style="width:100%; height:100%; object-fit:cover;">`; }; reader.readAsDataURL(file); };
 
-        window.handleMobileReceive = async () => {
-            const b = document.getElementById('mob-bloco').value; const a = document.getElementById('mob-apt').value; const r = document.getElementById('mob-remetente').value;
-            if(!a || !r) return showToast("Apt e Remetente!");
-            const agora = new Date(); const dataISO = `${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,'0')}-${String(agora.getDate()).padStart(2,'0')}`;
-            const payload = { idInterno: `ENT-${Math.floor(100000 + Math.random()*900000)}`, codigoSeguranca: `SAI-${Math.floor(100000 + Math.random()*900000)}`, bloco: b, apt: a, remetente: r, dataEntrada: `${String(agora.getDate()).padStart(2,'0')}/${String(agora.getMonth()+1).padStart(2,'0')} ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`, dataEntradaISO: dataISO, timestamp: agora.getTime(), status: "Aguardando retirada", porteiro: document.getElementById('porteiro-name-display').innerText };
-            if(mobPhotoBase64) payload.fotoObjeto = mobPhotoBase64; 
-            await addDoc(collection(db, "encomendas"), payload);
-            
-            const msgNotif = `Sua encomenda de ${r} chegou e está na portaria!`;
-            await addDoc(collection(db, "notificacoes"), {
-                apt: String(a).trim(), bloco: String(b||"").trim(), remetente: r, codigoSeguranca: payload.codigoSeguranca, mensagem: msgNotif, lida: false, timestamp: agora.getTime(), idInterno: payload.idInterno
-            });
-
-            document.getElementById('mob-apt').value = ''; document.getElementById('mob-remetente').value = ''; switchTab('list', document.getElementById('nav-list')); showToast("Registado!");
+        window.salvarPerfil = async () => {
+            const aptRaw = document.getElementById('prof-apt').value; if(!aptRaw) return showToast("Apt é obrigatório!");
+            const payload = { nome: document.getElementById('prof-nome').value, bloco: document.getElementById('prof-bloco').value, apt: String(aptRaw).trim(), email: usuarioAtual.email };
+            if(fotoPerfilBase64) payload.foto = fotoPerfilBase64;
+            await setDoc(doc(db, "moradores", usuarioAtual.uid), payload, { merge: true });
+            carregarDadosPerfil(usuarioAtual.uid, usuarioAtual.email); showToast("Perfil salvo!");
         };
 
-        function iniciarEscutaFila() {
-            onSnapshot(query(collection(db, "encomendas"), orderBy("timestamp", "desc"), limit(40)), (snap) => {
-                const pendentes = document.getElementById('porteiro-packages-list'); const historico = document.getElementById('porteiro-packages-history');
-                pendentes.innerHTML = ""; historico.innerHTML = "";
-                snap.forEach(doc => {
-                    const p = doc.data(); const isPendente = p.status === 'Aguardando retirada';
-                    const fotoHtml = p.fotoObjeto ? `<i class="ph ph-image" style="color:var(--primary); margin-left:6px;" title="Tem Foto"></i>` : '';
-                    const cardHTML = `<div class="app-card" style="padding:12px;"><div style="display:flex; justify-content:space-between;"><strong style="color:#0f172a;">${p.bloco ? p.bloco+' - ' : ''}Apt ${p.apt} ${fotoHtml}</strong><span class="badge ${isPendente ? 'badge-pending' : 'badge-completed'}">${p.idInterno}</span></div><div style="font-size:0.8rem; color:var(--text-muted); margin-top:6px;">${p.remetente} | ${p.dataEntrada}</div></div>`;
-                    if(isPendente) pendentes.innerHTML += cardHTML; else historico.innerHTML += cardHTML;
+        let listenerNotif = null;
+        function iniciarEscutaNotificacoes() {
+            if(listenerNotif) listenerNotif(); primeiraCargaNotif = true;
+            listenerNotif = onSnapshot(query(collection(db, "notificacoes"), where("apt", "==", aptAtualString)), (snapshot) => {
+                let notifs = []; snapshot.forEach(d => { notifs.push({ id: d.id, ...d.data() }); });
+                notifs.sort((a,b) => b.timestamp - a.timestamp);
+                
+                let unreadCount = 0; let html = '';
+                notifs.forEach(n => {
+                    if(!n.lida) unreadCount++;
+                    const dataObj = new Date(n.timestamp);
+                    const dataFormatada = `${String(dataObj.getDate()).padStart(2,'0')}/${String(dataObj.getMonth()+1).padStart(2,'0')} às ${String(dataObj.getHours()).padStart(2,'0')}:${String(dataObj.getMinutes()).padStart(2,'0')}`;
+                    
+                    html += `<div style="background:${n.lida ? '#fff' : '#f0f9ff'}; border:1px solid ${n.lida ? '#e2e8f0' : '#bae6fd'}; padding:12px; border-radius:8px; margin-bottom:10px; position:relative;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <strong style="font-size:0.85rem; color:#0f172a;">Aviso da Portaria</strong>
+                            <span style="font-size:0.65rem; color:#94a3b8; font-weight:600;">${dataFormatada}</span>
+                        </div>
+                        <p style="font-size:0.8rem; color:#475569; margin-bottom:8px;">${n.mensagem}</p>
+                        ${!n.lida ? `<button onclick="marcarComoLida('${n.id}')" style="background:none; border:none; color:var(--primary); font-size:0.75rem; font-weight:600; cursor:pointer;">Marcar como lida <i class="ph ph-check"></i></button>` : `<span style="font-size:0.7rem; color:#94a3b8;"><i class="ph ph-check-circle"></i> Lida</span>`}
+                    </div>`;
                 });
+                
+                document.getElementById('notif-list').innerHTML = html || `<p style="text-align:center; color:#94a3b8; font-size:0.8rem; padding: 20px;">Sem mensagens.</p>`;
+                
+                const badge = document.getElementById('unread-count'); 
+                if(unreadCount > 0) { 
+                    badge.innerText = unreadCount; 
+                    badge.style.display = 'block';
+                    badge.className = 'badge-pulse';
+                } else { 
+                    badge.style.display = 'none'; 
+                    badge.className = '';
+                }
+
+                if (!primeiraCargaNotif) { snapshot.docChanges().forEach((change) => { const n = change.doc.data(); if (change.type === "added" && !n.lida) triggerPushAlert("Hey Chegoou!", n.mensagem); }); }
+                primeiraCargaNotif = false;
+            });
+        }
+        window.marcarComoLida = async (idDoc) => { await updateDoc(doc(db, "notificacoes", idDoc), { lida: true }); };
+
+        let listenerEnc = null;
+        function iniciarEscutaEncomendas() {
+            if(listenerEnc) listenerEnc(); primeiraCargaEnc = true;
+            listenerEnc = onSnapshot(query(collection(db, "encomendas"), where("apt", "==", aptAtualString)), async (snapshot) => {
+                let encomendas = []; snapshot.forEach(d => encomendas.push(d.data())); encomendas.sort((a,b) => b.timestamp - a.timestamp);
+                const pend = document.getElementById('morador-packages-pending'); const hist = document.getElementById('morador-packages-history');
+                pend.innerHTML = ""; hist.innerHTML = ""; let contP = 0; let contH = 0;
+                encomendas.forEach(p => {
+                    const isPendente = p.status === "Aguardando retirada"; if(isPendente) contP++; else contH++;
+                    const fotoHtml = p.fotoObjeto ? `<div class="app-photo-ph" style="margin-top:10px;"><img src="${p.fotoObjeto}" style="width:100%; height:100%; object-fit:cover;"></div>` : '';
+                    const actInfo = isPendente ? `<div style="background:#f8fafc; border:1px dashed #cbd5e1; padding:12px; border-radius:8px; margin-top:12px; text-align:center;"><span style="font-size:0.7rem; color:#64748b; text-transform:uppercase;">Código de Liberação</span><div style="font-family:monospace; font-size:1.4rem; color:#0f172a; font-weight:700;">${p.codigoSeguranca}</div></div>` : `<div style="margin-top:10px; font-size:0.75rem;"><i class="ph ph-check-circle" style="color:var(--success);"></i> Retirado em <strong>${p.dataRetirada || "N/A"}</strong></div>`;
+                    const card = `<div class="app-card"><div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span style="font-weight:600; color:#0f172a;">${p.remetente}</span><span class="badge ${isPendente ? 'badge-pending' : 'badge-completed'}">${p.status}</span></div>${fotoHtml}<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.75rem; color:#475569; margin-top:12px;"><div><i class="ph ph-calendar-plus"></i> Entrada:<br><strong style="color:#0f172a;">${p.dataEntrada}</strong></div><div><i class="ph ph-user"></i> Porteiro:<br><strong style="color:#0f172a;">${p.porteiro}</strong></div></div>${actInfo}</div>`;
+                    if(isPendente) pend.innerHTML += card; else hist.innerHTML += card;
+                });
+                if(contP === 0) pend.innerHTML = `<p style="text-align:center; color:#94a3b8; padding: 20px;">Nenhuma entrega pendente.</p>`;
+                if(contH === 0) hist.innerHTML = `<p style="text-align:center; color:#94a3b8; padding: 10px;">Sem histórico.</p>`;
+                if(!primeiraCargaEnc) { snapshot.docChanges().forEach((change) => { const d = change.doc.data(); if (change.type === "added" && d.status === "Aguardando retirada") triggerPushAlert("Nova Encomenda", `A sua encomenda de ${d.remetente} chegou!`); }); }
+                primeiraCargaEnc = false;
             });
         }
 
-        window.confirmRelease = async () => {
-            const cod = document.getElementById('release-code-input').value.toUpperCase(); const snap = await getDocs(query(collection(db, "encomendas"), where("codigoSeguranca", "==", cod)));
-            if(snap.empty) return alert("Código inválido!");
-            const agora = new Date(); const dFormat = `${String(agora.getDate()).padStart(2,'0')}/${String(agora.getMonth()+1).padStart(2,'0')} às ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`;
-            snap.forEach(async (d) => { await updateDoc(doc(db, "encomendas", d.id), { status: "Retirada", dataRetirada: dFormat, timestampRetirada: agora.getTime() }); });
-            showToast("Baixa confirmada!"); document.getElementById('releaseModal').classList.remove('active'); document.getElementById('release-code-input').value = '';
+        const triggerPushAlert = (titulo, mensagem) => {
+            if ("Notification" in window && Notification.permission === "granted") {
+                navigator.serviceWorker.ready.then((reg) => { reg.showNotification(titulo, { body: mensagem, icon: 'icon-192.png' }); });
+            }
+            document.getElementById("morador-push-text").innerText = mensagem; document.getElementById("morador-push").classList.add("show");
+            setTimeout(() => document.getElementById("morador-push").classList.remove("show"), 5000);
         };
     </script>
 </body>
