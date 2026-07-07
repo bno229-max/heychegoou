@@ -29,7 +29,6 @@
         .btn-primary { background: var(--primary); } .btn-secondary { background: #fff; color: var(--text-main); border: 1px solid var(--border-color); }
         .auth-link { color: var(--primary); font-size: 0.85rem; font-weight: 500; cursor: pointer; display:inline-block; margin-top: 16px; text-decoration: none; }
 
-        /* TRANSIÇÃO PREMIUM NA SIDEBAR */
         .sidebar { width: 260px; background-color: var(--bg-sidebar); color: var(--sidebar-text); display: flex; flex-direction: column; flex-shrink: 0; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sidebar.collapsed { margin-left: -260px; }
         
@@ -90,6 +89,7 @@
         .panel { padding: 24px; max-width: 600px; background:white; border-radius:6px; border:1px solid #e2e8f0; }
         .push-icon { color: var(--primary); cursor: pointer; transition: 0.2s; font-size: 1.1rem; }
         .push-icon:hover { color: var(--primary-hover); transform: scale(1.1); }
+        .no-token-icon { color: var(--warning); font-size: 1rem; margin-left: 4px; cursor: help; }
     </style>
 </head>
 <body>
@@ -197,7 +197,7 @@
                     <div class="bi-panel"><div class="bi-panel-title">Top 5 Moradores (Volume)</div><div class="chart-wrapper"><canvas id="chartTopResidents"></canvas></div></div>
                     <div class="bi-panel"><div class="bi-panel-title">SLA de Retirada (Tempo Médio)</div>
                         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height: 100%;">
-                            <span style="font-size: 4rem; font-weight: 700; color: var(--warning);"><span id="dash-sla-val">0.0</span> <span style="font-size:1rem; color:#0f172a;">Dias</span></span>
+                            <span style="font-size: 4rem; font-weight: 700; color: var(--warning);"><span id="dash-sla-val">0</span> <span style="font-size:1rem; color:#0f172a;" id="dash-sla-unit">Dias</span></span>
                             <p style="color: var(--text-muted); font-size: 0.85rem; margin-top:8px;">Prazo médio dos moradores para buscar pacotes.</p>
                         </div>
                     </div>
@@ -215,7 +215,7 @@
                 </div>
                 <div class="table-panel">
                     <table>
-                        <thead><tr><th>Morador</th><th>Telefone</th><th>Bloco/Torre</th><th>Apt</th><th style="width: 120px;">Ações</th></tr></thead>
+                        <thead><tr><th>Morador</th><th>Telefone</th><th>Bloco/Torre</th><th>Apt</th><th>Notificação</th><th style="width: 120px;">Ações</th></tr></thead>
                         <tbody id="table-body-residents"></tbody>
                     </table>
                 </div>
@@ -247,11 +247,11 @@
                     <div class="form-group">
                         <label>Mensagem Push Padrão</label>
                         <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Use <strong>[REMETENTE]</strong> e <strong>[CODIGO]</strong> para personalizar.</p>
-                        <textarea id="config-push-msg" class="form-control" rows="3">Hey Chegoou a sua encomenda [REMETENTE] quando puder retire com a gente aqui na Portaria.</textarea>
+                        <textarea id="config-push-msg" class="form-control" rows="3">Hey Chegoou a sua encomenda de [REMETENTE]! Retire na Portaria com o código [CODIGO].</textarea>
                     </div>
                     <div class="form-group" style="margin-top: 16px;">
                         <label>Intervalo de Lembrete Automático (Horas)</label>
-                        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Reenviar push automaticamente apenas para quem não buscou.</p>
+                        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Reenviar push automaticamente apenas para quem não buscou. O envio é processado no servidor (Cloud Function).</p>
                         <input type="number" id="config-push-interval" class="form-control" value="2" min="1">
                     </div>
                     <button class="btn-primary" onclick="saveFirebaseConfig('comms')" style="margin-top: 16px;"><i class="ph ph-floppy-disk"></i> Salvar Regras</button>
@@ -302,8 +302,10 @@
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 
         let encomendasGlobais = []; let currentFilter = "Aguardando retirada"; let chartInstances = {}; let capacidadeVolume = 150;
+        // Mensagem padrão alinhada com o textarea do painel de Comunicação
         let globalPushMsg = "Hey Chegoou a sua encomenda de [REMETENTE]! Retire na Portaria com o código [CODIGO].";
         let globalPushInterval = 2;
+        let tokensPorApt = {}; // mapa apt -> tem token? (para indicador de notificação)
 
         window.openModal = (id) => document.getElementById(id).classList.add('active'); window.closeModal = (id) => document.getElementById(id).classList.remove('active');
         window.showToast = (msg) => { const t = document.getElementById("toastNotification"); document.getElementById("toast-message").innerText = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 3000); };
@@ -371,19 +373,28 @@
                 filterTable(); if(document.getElementById('pc-indicadores').classList.contains('active')) renderCharts();
             });
 
-            // MORADORES: ESCUTA E CRUD RESTAURADOS
+            // MORADORES: ESCUTA E CRUD
             onSnapshot(collection(db, "moradores"), (snap) => {
                 const tbody = document.getElementById('table-body-residents'); tbody.innerHTML = "";
+                tokensPorApt = {};
                 snap.forEach(docSnap => { 
                     const m = docSnap.data(); const id = docSnap.id;
+                    const temToken = !!m.tokenFCM;
+                    if(m.apt) tokensPorApt[String(m.apt).trim()] = temToken;
+                    // Indicador de notificação: verde se pode receber push, amarelo se não
+                    const notifCell = temToken
+                        ? `<span class="badge badge-completed" title="Pode receber notificações push"><i class="ph ph-bell-ringing"></i> Ativa</span>`
+                        : `<span class="badge badge-pending" title="Morador ainda não instalou/logou no app. Não recebe push."><i class="ph ph-bell-slash"></i> Sem app</span>`;
                     tbody.innerHTML += `<tr>
                         <td><strong style="color:#0f172a;">${m.nome||'Morador'}</strong></td><td>${m.telefone||'-'}</td><td>${m.bloco||'-'}</td><td>${m.apt||'-'}</td>
+                        <td>${notifCell}</td>
                         <td><button class="btn-action" onclick="openEditResident('${id}', '${m.nome||''}', '${m.telefone||''}', '${m.bloco||''}', '${m.apt||''}')"><i class="ph ph-pencil-simple"></i></button> <button class="btn-action" style="color:var(--danger);" onclick="deleteResident('${id}')"><i class="ph ph-trash"></i></button></td>
                     </tr>`;
                 });
+                filterTable(); // re-render tabela de encomendas para atualizar ícones de token
             });
 
-            // PORTEIROS: ESCUTA E CRUD RESTAURADOS
+            // PORTEIROS: ESCUTA E CRUD
             onSnapshot(collection(db, "porteiros"), (snap) => {
                 const tbody = document.getElementById('table-body-porteiros'); tbody.innerHTML = "";
                 const selectPorteiro = document.getElementById('modal-porteiro'); selectPorteiro.innerHTML = `<option>Admin</option>`;
@@ -394,7 +405,7 @@
             });
         }
 
-        // --- FUNÇÕES CRUD RESTAURADAS ---
+        // --- FUNÇÕES CRUD ---
         window.addResidentFirebase = async () => {
             const n = document.getElementById('new-res-name').value; const t = document.getElementById('new-res-phone').value; 
             const b = document.getElementById('new-res-block').value; const a = document.getElementById('new-res-apt').value;
@@ -431,7 +442,10 @@
             filtered.forEach(p => {
                 const isP = p.status === "Aguardando retirada"; const badge = `<span class="badge ${isP ? 'badge-pending' : 'badge-completed'}">${p.status}</span>`;
                 const action = isP ? `<button class="btn-action" onclick="document.getElementById('release-code-input').value=''; openModal('releaseModal')" title="Baixar"><i class="ph ph-key"></i></button>` : '-';
-                const pushIcon = isP ? `<i class="ph ph-paper-plane-tilt push-icon" title="Notificar" onclick="enviarPushManual('${p.idInterno}', '${p.apt}', '${p.bloco || ""}', '${p.remetente}', '${p.codigoSeguranca}')"></i>` : '';
+                // Ícone de push + alerta se o apt não tem token
+                const aptTemToken = tokensPorApt[String(p.apt).trim()];
+                const semTokenAlerta = (isP && aptTemToken === false) ? `<i class="ph ph-warning-circle no-token-icon" title="Este apartamento não tem app instalado — o morador não receberá o push."></i>` : '';
+                const pushIcon = isP ? `<i class="ph ph-paper-plane-tilt push-icon" title="Notificar" onclick="enviarPushManual('${p.idInterno}', '${p.apt}', '${p.bloco || ""}', '${p.remetente}', '${p.codigoSeguranca}')"></i>${semTokenAlerta}` : '';
                 tbody.innerHTML += `<tr><td><strong style="color:var(--primary);">${p.idInterno}</strong></td><td><strong style="color:#0f172a;">${p.bloco ? p.bloco+' - ' : ''}Apt ${p.apt} ${pushIcon}</strong></td><td>${p.remetente}</td><td>${p.tamanho||'M'}</td><td>${p.porteiro}</td><td>${p.dataEntrada}</td><td>${badge}</td><td>${action}</td></tr>`;
             });
         };
@@ -453,37 +467,15 @@
             const snap = await getDocs(query(collection(db, "encomendas"), where("codigoSeguranca", "==", cod)));
             if(snap.empty) return alert("Código inválido!");
             const agora = new Date(); const dFormat = `${String(agora.getDate()).padStart(2,'0')}/${String(agora.getMonth()+1).padStart(2,'0')} às ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`;
-            snap.forEach(async d => { await updateDoc(doc(db, "encomendas", d.id), { status: "Retirada", dataRetirada: dFormat, timestampRetirada: agora.getTime() }); });
+            // Aguarda todas as baixas com Promise.all (corrige async dentro de forEach)
+            const updates = [];
+            snap.forEach(d => { updates.push(updateDoc(doc(db, "encomendas", d.id), { status: "Retirada", dataRetirada: dFormat, timestampRetirada: agora.getTime() })); });
+            await Promise.all(updates);
             showToast("Baixa confirmada!"); closeModal('releaseModal');
         };
 
-        // --- LEMBRETE AUTOMÁTICO PARA PENDENTES (WORKER DE BACKGROUND) ---
-        setInterval(() => {
-            if(!globalPushInterval || encomendasGlobais.length === 0) return;
-            const msInterval = globalPushInterval * 60 * 60 * 1000;
-            const now = Date.now();
-            
-            encomendasGlobais.forEach(async (p) => {
-                if (p.status === "Aguardando retirada") {
-                    const lastNotified = p.lastNotified || p.timestamp;
-                    // Se o tempo configurado já passou desde a última vez que foi notificado ou desde a entrada...
-                    if (now - lastNotified >= msInterval) {
-                        let msgFormatada = globalPushMsg.replace(/\[REMETENTE\]/g, p.remetente).replace(/\[CODIGO\]/g, p.codigoSeguranca);
-                        try {
-                            await addDoc(collection(db, "notificacoes"), {
-                                apt: String(p.apt).trim(), bloco: String(p.bloco||"").trim(),
-                                remetente: p.remetente, codigoSeguranca: p.codigoSeguranca,
-                                mensagem: `(Lembrete Automático) ${msgFormatada}`, lida: false, timestamp: now, idInterno: p.idInterno
-                            });
-                            // Atualiza o tempo no pacote para não disparar novamente até passar o intervalo de novo
-                            await updateDoc(doc(db, "encomendas", p.idDoc), { lastNotified: now });
-                            console.log(`Lembrete auto enviado para Apt ${p.apt}`);
-                        } catch(e) { console.error(e); }
-                    }
-                }
-            });
-        }, 60000); // Roda a cada 60 segundos
-        // -----------------------------------------------------------------
+        // NOTA: O lembrete automático foi movido para uma Cloud Function agendada (servidor),
+        // para funcionar mesmo com o painel fechado e sem duplicar entre navegadores.
 
         window.renderCharts = function() {
             const dStart = document.getElementById('dashDateStart').value; const dEnd = document.getElementById('dashDateEnd').value;
@@ -499,16 +491,24 @@
             let fIn = [0,0,0,0,0,0,0]; let fOut = [0,0,0,0,0,0,0];
             filtered.forEach(p => { if(p.timestamp) fIn[new Date(p.timestamp).getDay()]++; if(p.status === "Retirada" && p.timestampRetirada) fOut[new Date(p.timestampRetirada).getDay()]++; });
             if(chartInstances.flow) chartInstances.flow.destroy();
-            chartInstances.flow = new Chart(document.getElementById('chartFlow').getContext('2d'), { type: 'line', data: { labels: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'], datasets: [{ label: 'Entradas', data: fIn, borderColor: '#0284c7', tension: 0.3 }, { label: 'Saídas', data: fOut, borderColor: '#16a34a', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y:{grid:{color:'#e2e8f0'}}, x:{grid:{display:false}} } } });
+            // ALTERADO: gráfico de Fluxo Semanal agora em BARRAS
+            chartInstances.flow = new Chart(document.getElementById('chartFlow').getContext('2d'), { type: 'bar', data: { labels: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'], datasets: [{ label: 'Entradas', data: fIn, backgroundColor: '#0284c7', borderRadius: 4 }, { label: 'Saídas', data: fOut, backgroundColor: '#16a34a', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y:{grid:{color:'#e2e8f0'}, ticks:{precision:0}}, x:{grid:{display:false}} } } });
 
             let aptCounts = {}; filtered.forEach(p => { const a = p.apt || 'N/A'; aptCounts[a] = (aptCounts[a] || 0) + 1; });
             const topApts = Object.keys(aptCounts).sort((a,b) => aptCounts[b] - aptCounts[a]).slice(0,5);
             if(chartInstances.top) chartInstances.top.destroy();
-            chartInstances.top = new Chart(document.getElementById('chartTopResidents').getContext('2d'), { type: 'bar', data: { labels: topApts, datasets: [{ label: 'Volumes', data: topApts.map(a => aptCounts[a]), backgroundColor: '#38bdf8' }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            chartInstances.top = new Chart(document.getElementById('chartTopResidents').getContext('2d'), { type: 'bar', data: { labels: topApts, datasets: [{ label: 'Volumes', data: topApts.map(a => aptCounts[a]), backgroundColor: '#38bdf8' }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { precision:0 } } } } });
 
             let tMs = 0; let cSla = 0;
             filtered.forEach(p => { if(p.status === "Retirada" && p.timestamp && p.timestampRetirada) { tMs += (p.timestampRetirada - p.timestamp); cSla++; } });
-            document.getElementById('dash-sla-val').innerText = cSla > 0 ? (tMs / (1000 * 60 * 60 * 24)).toFixed(1) : "0.0";
+            // ALTERADO: SLA arredondado de forma inteligente — em horas se < 1 dia, senão em dias arredondado
+            const slaEl = document.getElementById('dash-sla-val'); const unitEl = document.getElementById('dash-sla-unit');
+            if(cSla === 0){ slaEl.innerText = "0"; unitEl.innerText = "Dias"; }
+            else {
+                const mediaMs = tMs / cSla; const mediaDias = mediaMs / (1000*60*60*24);
+                if(mediaDias < 1){ slaEl.innerText = Math.round(mediaMs / (1000*60*60)); unitEl.innerText = "Horas"; }
+                else { slaEl.innerText = Math.round(mediaDias); unitEl.innerText = "Dias"; }
+            }
         }
     </script>
 </body>
