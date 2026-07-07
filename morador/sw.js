@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hey-chegoou-v3';
+const CACHE_NAME = 'morador-v2';
 const urlsToCache = [
   './',
   './index.html',
@@ -18,7 +18,10 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames =>
       Promise.all(cacheNames.map(cacheName => {
-        if (cacheName !== CACHE_NAME) return caches.delete(cacheName);
+        // Só apaga caches DESTE app (prefixo morador-), nunca os do portaria
+        if (cacheName.startsWith('morador-') && cacheName !== CACHE_NAME) {
+          return caches.delete(cacheName);
+        }
       }))
     ).then(() => self.clients.claim())
   );
