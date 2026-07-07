@@ -123,6 +123,8 @@
             </div>
 
             <div class="form-group"><label>Nome</label><input type="text" id="prof-nome" class="form-control"></div>
+            <div class="form-group"><label>Telefone</label><input type="tel" id="prof-telefone" class="form-control" placeholder="(00) 00000-0000"></div>
+            <div class="form-group"><label>E-mail</label><input type="email" id="prof-email" class="form-control" placeholder="seu@email.com"></div>
             <div style="display:flex; gap:10px;"><div class="form-group"><label>Bloco</label><input type="text" id="prof-bloco" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="prof-apt" class="form-control"></div></div>
             <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:10px; padding:10px; background:#f1f5f9; border-radius:6px;">O número do Apartamento é essencial para associar as tuas encomendas automaticamente.</p>
             <button class="btn-primary" style="background:transparent; color:var(--danger); border:1px solid var(--danger); margin-top:20px;" onclick="fazerLogout()"><i class="ph ph-sign-out"></i> Sair do Aplicativo</button>
@@ -214,6 +216,7 @@
             const docSnap = await getDoc(doc(db, "moradores", uid));
             if (docSnap.exists()) {
                 const d = docSnap.data(); document.getElementById('prof-nome').value = d.nome || ""; document.getElementById('prof-bloco').value = d.bloco || ""; document.getElementById('prof-apt').value = d.apt || "";
+                document.getElementById('prof-telefone').value = d.telefone || ""; document.getElementById('prof-email').value = d.email || usuarioAtual.email || "";
                 aptAtualString = String(d.apt || "").trim();
                 document.getElementById('morador-header-name').innerText = `Olá, ${d.nome ? d.nome.split(' ')[0] : 'Morador'}`;
                 document.getElementById('morador-header-local').innerText = aptAtualString ? (d.bloco ? `${d.bloco} - Apt ${aptAtualString}` : `Apt ${aptAtualString}`) : "Falta preencher Perfil";
@@ -227,7 +230,7 @@
 
         window.salvarPerfil = async () => {
             const aptRaw = document.getElementById('prof-apt').value; if(!aptRaw) return showToast("Apt é obrigatório!");
-            const payload = { nome: document.getElementById('prof-nome').value, bloco: document.getElementById('prof-bloco').value, apt: String(aptRaw).trim(), email: usuarioAtual.email };
+            const payload = { nome: document.getElementById('prof-nome').value, telefone: document.getElementById('prof-telefone').value, bloco: document.getElementById('prof-bloco').value, apt: String(aptRaw).trim(), email: document.getElementById('prof-email').value || usuarioAtual.email };
             if(fotoPerfilBase64) payload.foto = fotoPerfilBase64;
             await setDoc(doc(db, "moradores", usuarioAtual.uid), payload, { merge: true });
             carregarDadosPerfil(usuarioAtual.uid, usuarioAtual.email); showToast("Perfil salvo!");
