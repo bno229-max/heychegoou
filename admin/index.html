@@ -90,6 +90,10 @@
         .push-icon { color: var(--primary); cursor: pointer; transition: 0.2s; font-size: 1.1rem; }
         .push-icon:hover { color: var(--primary-hover); transform: scale(1.1); }
         .no-token-icon { color: var(--warning); font-size: 1rem; margin-left: 4px; cursor: help; }
+        .sender-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .sender-tag { padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 20px; background: #f8fafc; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: 0.15s; color: var(--text-main); }
+        .sender-tag:hover { background: #e0f2fe; border-color: var(--primary); color: var(--primary); }
+        .sender-tag.selected { background: var(--primary); border-color: var(--primary); color: #fff; }
     </style>
 </head>
 <body>
@@ -278,16 +282,16 @@
     </div>
 
     <!-- MODAIS -->
-    <div class="modal-overlay" id="receiveModal"><div class="modal-card"><div class="modal-header"><h2>Nova Encomenda</h2><button class="btn-action" style="border:none;" onclick="closeModal('receiveModal')"><i class="ph ph-x"></i></button></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Bloco</label><input type="text" id="modal-bloco" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="modal-apt" class="form-control" required></div></div><div class="form-group"><label>Remetente *</label><input type="text" id="modal-remetente" class="form-control" required></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Tamanho</label><select id="modal-tamanho" class="form-control"><option>Pequena</option><option selected>Média</option><option>Grande</option></select></div><div class="form-group"><label>Qtd</label><input type="number" id="modal-quantidade" class="form-control" value="1" min="1"></div></div><div class="form-group"><label>Porteiro</label><select id="modal-porteiro" class="form-control"><option>Admin</option></select></div><button class="btn-primary" style="margin-top:16px;" onclick="handleReceiveAdmin()">Salvar</button></div></div>
+    <div class="modal-overlay" id="receiveModal"><div class="modal-card"><div class="modal-header"><h2>Nova Encomenda</h2><button class="btn-action" style="border:none;" onclick="closeModal('receiveModal')"><i class="ph ph-x"></i></button></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Bloco</label><input type="text" id="modal-bloco" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="modal-apt" class="form-control" required></div></div><div class="form-group"><label>Remetente *</label><input type="text" id="modal-remetente" class="form-control" required><div class="sender-tags" id="sender-tags"><span class="sender-tag" onclick="selecionarRemetente(this, 'Mercado Livre')">Mercado Livre</span><span class="sender-tag" onclick="selecionarRemetente(this, 'Shein')">Shein</span><span class="sender-tag" onclick="selecionarRemetente(this, 'Shopee')">Shopee</span><span class="sender-tag" onclick="selecionarRemetente(this, 'Mercado')">Mercado</span><span class="sender-tag" onclick="selecionarRemetente(this, 'Correios')">Correios</span><span class="sender-tag" onclick="selecionarRemetente(this, 'Outros')">Outros</span></div></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Tamanho</label><select id="modal-tamanho" class="form-control"><option>Pequena</option><option selected>Média</option><option>Grande</option></select></div><div class="form-group"><label>Qtd</label><input type="number" id="modal-quantidade" class="form-control" value="1" min="1"></div></div><div class="form-group"><label>Porteiro</label><select id="modal-porteiro" class="form-control"><option>Admin</option></select></div><button class="btn-primary" style="margin-top:16px;" onclick="handleReceiveAdmin()">Salvar</button></div></div>
     
     <!-- MODAL NOVO MORADOR -->
-    <div class="modal-overlay" id="addResidentModal"><div class="modal-card" style="width: 450px;"><div class="modal-header"><h2>Novo Morador</h2><button class="btn-action" style="border:none;" onclick="closeModal('addResidentModal')"><i class="ph ph-x"></i></button></div><div class="form-group"><label>Nome</label><input type="text" id="new-res-name" class="form-control"></div><div class="form-group"><label>Telefone</label><input type="text" id="new-res-phone" class="form-control"></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Bloco</label><input type="text" id="new-res-block" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="new-res-apt" class="form-control" required></div></div><button class="btn-primary" style="margin-top:10px;" onclick="addResidentFirebase()">Salvar Registo</button></div></div>
+    <div class="modal-overlay" id="addResidentModal"><div class="modal-card" style="width: 450px;"><div class="modal-header"><h2>Novo Morador</h2><button class="btn-action" style="border:none;" onclick="closeModal('addResidentModal')"><i class="ph ph-x"></i></button></div><div class="form-group"><label>Nome</label><input type="text" id="new-res-name" class="form-control"></div><div class="form-group"><label>Telefone</label><input type="text" id="new-res-phone" class="form-control"></div><div class="form-group"><label>E-mail</label><input type="email" id="new-res-email" class="form-control" placeholder="morador@email.com"></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Bloco</label><input type="text" id="new-res-block" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="new-res-apt" class="form-control" required></div></div><button class="btn-primary" style="margin-top:10px;" onclick="addResidentFirebase()">Salvar Registo</button></div></div>
     
     <!-- MODAL EDITAR MORADOR -->
-    <div class="modal-overlay" id="editResidentModal"><div class="modal-card" style="width: 450px;"><div class="modal-header"><h2>Editar Morador</h2><button class="btn-action" style="border:none;" onclick="closeModal('editResidentModal')"><i class="ph ph-x"></i></button></div><input type="hidden" id="edit-res-id"><div class="form-group"><label>Nome</label><input type="text" id="edit-res-name" class="form-control"></div><div class="form-group"><label>Telefone</label><input type="text" id="edit-res-phone" class="form-control"></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Bloco</label><input type="text" id="edit-res-block" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="edit-res-apt" class="form-control" required></div></div><button class="btn-primary" style="margin-top:10px;" onclick="updateResidentFirebase()">Atualizar Registo</button></div></div>
+    <div class="modal-overlay" id="editResidentModal"><div class="modal-card" style="width: 450px;"><div class="modal-header"><h2>Editar Morador</h2><button class="btn-action" style="border:none;" onclick="closeModal('editResidentModal')"><i class="ph ph-x"></i></button></div><input type="hidden" id="edit-res-id"><div class="form-group"><label>Nome</label><input type="text" id="edit-res-name" class="form-control"></div><div class="form-group"><label>Telefone</label><input type="text" id="edit-res-phone" class="form-control"></div><div class="form-group"><label>E-mail</label><input type="email" id="edit-res-email" class="form-control" placeholder="morador@email.com"></div><div style="display:flex; gap:16px;"><div class="form-group"><label>Bloco</label><input type="text" id="edit-res-block" class="form-control"></div><div class="form-group"><label>Apt *</label><input type="text" id="edit-res-apt" class="form-control" required></div></div><button class="btn-primary" style="margin-top:10px;" onclick="updateResidentFirebase()">Atualizar Registo</button></div></div>
 
     <!-- MODAL NOVO PORTEIRO -->
-    <div class="modal-overlay" id="addPorteiroModal"><div class="modal-card" style="width: 400px;"><div class="modal-header"><h2>Novo Porteiro</h2><button class="btn-action" style="border:none;" onclick="closeModal('addPorteiroModal')"><i class="ph ph-x"></i></button></div><div class="form-group"><label>Nome</label><input type="text" id="new-porteiro-name" class="form-control"></div><button class="btn-primary" onclick="addPorteiroFirebase()">Adicionar</button></div></div>
+    <div class="modal-overlay" id="addPorteiroModal"><div class="modal-card" style="width: 400px;"><div class="modal-header"><h2>Novo Porteiro</h2><button class="btn-action" style="border:none;" onclick="closeModal('addPorteiroModal')"><i class="ph ph-x"></i></button></div><div class="form-group"><label>Nome</label><input type="text" id="new-porteiro-name" class="form-control"></div><div class="form-group"><label>Turno</label><select id="new-porteiro-turno" class="form-control"><option value="Manhã">Manhã</option><option value="Noite">Noite</option></select></div><button class="btn-primary" onclick="addPorteiroFirebase()">Adicionar</button></div></div>
     
     <div class="modal-overlay" id="releaseModal"><div class="modal-card" style="width: 400px; text-align:center;"><div class="modal-header"><h2>Validação de Retirada</h2><button class="btn-action" style="border:none;" onclick="closeModal('releaseModal')"><i class="ph ph-x"></i></button></div><input type="text" id="release-code-input" class="form-control" placeholder="SAI-XXXXXX" style="text-align:center; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; margin-bottom:16px;"><button class="btn-primary" style="background: var(--success);" onclick="confirmRelease()"><i class="ph ph-shield-check"></i> LIBERAR</button></div></div>
     <div class="toast" id="toastNotification"><i class="ph ph-check-circle" style="font-size: 1.4rem; color: #4ade80;"></i><span id="toast-message"></span></div>
@@ -308,6 +312,11 @@
         let tokensPorApt = {}; // mapa apt -> tem token? (para indicador de notificação)
 
         window.openModal = (id) => document.getElementById(id).classList.add('active'); window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+        window.selecionarRemetente = (el, nome) => {
+            document.getElementById('modal-remetente').value = nome;
+            document.querySelectorAll('#sender-tags .sender-tag').forEach(t => t.classList.remove('selected'));
+            el.classList.add('selected');
+        };
         window.showToast = (msg) => { const t = document.getElementById("toastNotification"); document.getElementById("toast-message").innerText = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 3000); };
         
         // PUSH MANUAL QUE RESPEITA A MENSAGEM PADRÃO
@@ -388,7 +397,7 @@
                     tbody.innerHTML += `<tr>
                         <td><strong style="color:#0f172a;">${m.nome||'Morador'}</strong></td><td>${m.telefone||'-'}</td><td>${m.bloco||'-'}</td><td>${m.apt||'-'}</td>
                         <td>${notifCell}</td>
-                        <td><button class="btn-action" onclick="openEditResident('${id}', '${m.nome||''}', '${m.telefone||''}', '${m.bloco||''}', '${m.apt||''}')"><i class="ph ph-pencil-simple"></i></button> <button class="btn-action" style="color:var(--danger);" onclick="deleteResident('${id}')"><i class="ph ph-trash"></i></button></td>
+                        <td><button class="btn-action" onclick="openEditResident('${id}', '${m.nome||''}', '${m.telefone||''}', '${m.bloco||''}', '${m.apt||''}', '${m.email||''}')"><i class="ph ph-pencil-simple"></i></button> <button class="btn-action" style="color:var(--danger);" onclick="deleteResident('${id}')"><i class="ph ph-trash"></i></button></td>
                     </tr>`;
                 });
                 filterTable(); // re-render tabela de encomendas para atualizar ícones de token
@@ -399,7 +408,7 @@
                 const tbody = document.getElementById('table-body-porteiros'); tbody.innerHTML = "";
                 const selectPorteiro = document.getElementById('modal-porteiro'); selectPorteiro.innerHTML = `<option>Admin</option>`;
                 snap.forEach(doc => { 
-                    tbody.innerHTML += `<tr><td><strong style="color:#0f172a;">${doc.data().nome}</strong></td><td>Geral</td><td><span class="badge badge-completed">Ativo</span></td><td><button class="btn-action" style="color:var(--danger);" onclick="delPorteiro('${doc.id}')"><i class="ph ph-trash"></i></button></td></tr>`; 
+                    tbody.innerHTML += `<tr><td><strong style="color:#0f172a;">${doc.data().nome}</strong></td><td>${doc.data().turno || 'Geral'}</td><td><span class="badge badge-completed">Ativo</span></td><td><button class="btn-action" style="color:var(--danger);" onclick="delPorteiro('${doc.id}')"><i class="ph ph-trash"></i></button></td></tr>`; 
                     selectPorteiro.innerHTML += `<option value="${doc.data().nome}">${doc.data().nome}</option>`;
                 });
             });
@@ -408,18 +417,19 @@
         // --- FUNÇÕES CRUD ---
         window.addResidentFirebase = async () => {
             const n = document.getElementById('new-res-name').value; const t = document.getElementById('new-res-phone').value; 
+            const e = document.getElementById('new-res-email').value;
             const b = document.getElementById('new-res-block').value; const a = document.getElementById('new-res-apt').value;
             if(!a) return alert("Apartamento obrigatório!");
-            await setDoc(doc(db, "moradores", `admin_add_${Date.now()}`), { nome: n, telefone: t, bloco: b, apt: a }); closeModal('addResidentModal'); showToast("Morador Registado!");
+            await setDoc(doc(db, "moradores", `admin_add_${Date.now()}`), { nome: n, telefone: t, email: e, bloco: b, apt: a }); closeModal('addResidentModal'); showToast("Morador Registado!");
         };
-        window.openEditResident = (id, n, t, b, a) => { document.getElementById('edit-res-id').value=id; document.getElementById('edit-res-name').value=n; document.getElementById('edit-res-phone').value=t; document.getElementById('edit-res-block').value=b; document.getElementById('edit-res-apt').value=a; openModal('editResidentModal'); };
+        window.openEditResident = (id, n, t, b, a, e) => { document.getElementById('edit-res-id').value=id; document.getElementById('edit-res-name').value=n; document.getElementById('edit-res-phone').value=t; document.getElementById('edit-res-block').value=b; document.getElementById('edit-res-apt').value=a; document.getElementById('edit-res-email').value=e||''; openModal('editResidentModal'); };
         window.updateResidentFirebase = async () => {
-            const id = document.getElementById('edit-res-id').value; const p = { nome: document.getElementById('edit-res-name').value, telefone: document.getElementById('edit-res-phone').value, bloco: document.getElementById('edit-res-block').value, apt: document.getElementById('edit-res-apt').value };
+            const id = document.getElementById('edit-res-id').value; const p = { nome: document.getElementById('edit-res-name').value, telefone: document.getElementById('edit-res-phone').value, email: document.getElementById('edit-res-email').value, bloco: document.getElementById('edit-res-block').value, apt: document.getElementById('edit-res-apt').value };
             if(!p.apt) return alert("Apt obrigatório!"); await updateDoc(doc(db, "moradores", id), p); closeModal('editResidentModal'); showToast("Morador Atualizado!");
         };
         window.deleteResident = async (id) => { if(confirm("Deseja excluir este morador?")) await deleteDoc(doc(db, "moradores", id)); };
 
-        window.addPorteiroFirebase = async () => { const n = document.getElementById('new-porteiro-name').value; if(!n) return; await addDoc(collection(db, "porteiros"), { nome: n }); closeModal('addPorteiroModal'); document.getElementById('new-porteiro-name').value=''; showToast("Porteiro Adicionado!"); };
+        window.addPorteiroFirebase = async () => { const n = document.getElementById('new-porteiro-name').value; const turno = document.getElementById('new-porteiro-turno').value; if(!n) return; await addDoc(collection(db, "porteiros"), { nome: n, turno: turno }); closeModal('addPorteiroModal'); document.getElementById('new-porteiro-name').value=''; showToast("Porteiro Adicionado!"); };
         window.delPorteiro = async (id) => { if(confirm("Remover Porteiro?")) await deleteDoc(doc(db, "porteiros", id)); };
         // --------------------------------
 
@@ -460,6 +470,9 @@
                 dataEntradaISO: dataISO, timestamp: agora.getTime(), status: "Aguardando retirada", porteiro: "Admin"
             });
             closeModal('receiveModal'); showToast("Entrada registada!");
+            // Limpa o formulário e as tags de remetente para o próximo registro
+            document.getElementById('modal-bloco').value = ''; document.getElementById('modal-apt').value = ''; document.getElementById('modal-remetente').value = '';
+            document.querySelectorAll('#sender-tags .sender-tag').forEach(t => t.classList.remove('selected'));
         };
 
         window.confirmRelease = async () => {
